@@ -1,0 +1,62 @@
+<!--
+Copyright 2023 Joao Eduardo Luis <joao@abysmo.io>
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<div class="modal-header">
+  <h4 class="modal-title">Log Weight</h4>
+  <button type="button" class="btn-close" aria-label="Close"
+          (click)="activeModal.dismiss('Closed')"></button>
+</div>
+
+<div class="modal-body">
+  <form class="needs-validation">
+    <div class="row mb-3">
+      <div class="col-3">
+        <span class="fw-bold">When</span>
+      </div>
+      <div class="col-5">
+        <div class="input-group">
+          <input class="form-control" placeholder="yyyy-mm-dd" name="selectedPickerDate"
+                 ngbDatepicker #d="ngbDatepicker" [startDate]="selectedDate"
+                 [(ngModel)]="selectedDate" [value]="formatter.format(selectedDate)" required
+                 #selectedPickerDate="ngModel" [class.is-invalid]="selectedPickerDate.invalid" />
+          <button class="btn btn-outline-secondary mdi mdi-calendar" (click)="d.toggle()"
+                  type="button"></button>
+        </div>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-3">
+        <span class="fw-bold">Weight</span>
+      </div>
+      <div class="col-5">
+        <div class="input-group">
+          <input class="form-control" placeholder="0.0" type="number" name="weightKg"
+                 #weightKg="ngModel" [(ngModel)]="weight" aria-label="Weight Kg" step=".01"
+                 (ngModelChange)="weight = $event" name="weight" id="weightInput" required min="2.0"
+                 [class.is-invalid]="weightKg.invalid && (weightKg.dirty || weightKg.touched)" />
+          <span class="input-group-text">Kg</span>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-outline-secondary"
+          (click)="activeModal.dismiss('cancel')">Cancel</button>
+  <button type="button" class="btn btn-primary" (click)="submit()"
+          [disabled]="weightKg.invalid || selectedPickerDate.invalid">Save</button>
+</div>

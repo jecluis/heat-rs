@@ -1,0 +1,47 @@
+<!--
+Copyright 2023 Joao Eduardo Luis <joao@abysmo.io>
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<nav class="navbar navbar-expand navbar-dark bg-dark position-fixed top-30 w-100 z-3">
+  <div class="container-fluid">
+
+    <div class="navbar-brand">
+      <span>HEAT</span>
+    </div>
+
+    <div class="collapse navbar-collapse">
+
+      <div class="fs-4 me-auto">
+        <heat-log-button></heat-log-button>
+      </div>
+
+      <span class="navbar-text ms-3 me-auto mb-1 mb-lg-0">v{{version}}</span>
+
+      <div class="d-flex fs-4 me-2 mb-2 mb-lg-0">
+        <a class="navbar-text ms-3" href="https://github.com/jecluis/heat" target="_blank"
+           placement="bottom" ngbTooltip="Repository">
+          <i class="mdi mdi-github"></i>
+        </a>
+
+        <a class="navbar-text ms-2" href="https://github.com/jecluis/heat/issues" target="_blank"
+           placement="bottom" ngbTooltip="File a Bug">
+          <i class="mdi mdi-bug-outline"></i>
+        </a>
+      </div>
+
+    </div>
+
+  </div>
+</nav>
