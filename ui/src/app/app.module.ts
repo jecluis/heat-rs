@@ -9,6 +9,7 @@ import { MainLayoutComponent } from "./layout/main-layout/main-layout.component"
 import { LogButtonComponent } from "./components/log/log-button/log-button.component";
 import { LogWeightModalComponent } from "./components/log/log-weight-modal/log-weight-modal.component";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { GlobalToasterComponent } from "./shared/components/global-toaster/global-toaster.component";
 
 @NgModule({
   declarations: [
@@ -17,6 +18,7 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
     MainLayoutComponent,
     LogButtonComponent,
     LogWeightModalComponent,
+    GlobalToasterComponent,
   ],
   imports: [
     BrowserModule,

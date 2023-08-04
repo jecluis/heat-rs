@@ -19,6 +19,7 @@ import {
   NgbDateParserFormatter,
   NgbDateStruct,
 } from "@ng-bootstrap/ng-bootstrap";
+import { ToastService } from "src/app/shared/services/toast.service";
 
 @Component({
   selector: "heat-log-weight-modal",
@@ -33,6 +34,7 @@ export class LogWeightModalComponent {
     public activeModal: NgbActiveModal,
     private calendarSvc: NgbCalendar,
     public formatter: NgbDateParserFormatter,
+    public toastSvc: ToastService,
   ) {
     this.selectedDate = this.calendarSvc.getToday();
     this.weight = 0.0;
@@ -41,5 +43,6 @@ export class LogWeightModalComponent {
   public submit() {
     // TODO(joao): store the values somewhere
     this.activeModal.close();
+    this.toastSvc.showSuccess("Weight recorded!", "weight");
   }
 }
