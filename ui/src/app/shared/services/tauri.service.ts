@@ -12,18 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from "@angular/core";
-import { TauriService } from "src/app/shared/services/tauri.service";
+import { Injectable } from "@angular/core";
+import { invoke } from "@tauri-apps/api";
+import { getVersion as tauriGetVersion } from "@tauri-apps/api/app";
 
-@Component({
-  selector: "heat-main-layout",
-  templateUrl: "./main-layout.component.html",
-  styleUrls: ["./main-layout.component.scss"],
+@Injectable({
+  providedIn: "root",
 })
-export class MainLayoutComponent {
-  public version: string = "";
+export class TauriService {
+  public constructor() {}
 
-  public constructor(private tauriSvc: TauriService) {
-    this.tauriSvc.getVersion().then((v) => (this.version = v));
+  public async getVersion(): Promise<string> {
+    return await tauriGetVersion();
   }
+
+  public async logWeight(date: string, value: number): Promise<void> {}
 }
