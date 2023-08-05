@@ -94,7 +94,14 @@ async fn setup_db(path: &std::path::PathBuf) -> db::DB {
 #[tokio::main]
 async fn main() {
     env_logger::init();
-    let paths = paths::Paths::default().init().await;
+    let paths = match std::env::var("HEAT_BASE_DIR") {
+        Ok(basedir) => {
+            paths::Paths::new(&std::path::PathBuf::from(&basedir))
+                .init()
+                .await
+        }
+        Err(_) => paths::Paths::default().init().await,
+    };
     let db_handle = setup_db(&paths.db_path).await;
 
     tauri::async_runtime::set(tokio::runtime::Handle::current());

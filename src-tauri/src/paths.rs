@@ -39,6 +39,18 @@ impl Default for Paths {
 }
 
 impl Paths {
+    pub fn new(basedir: &PathBuf) -> Paths {
+        let data = basedir.join("data").join(HEAT_PATH_ID);
+        let config = basedir.join("config").join(HEAT_PATH_ID);
+        let db_path = data.join("heat.sqlite3");
+
+        Paths {
+            data,
+            config,
+            db_path,
+        }
+    }
+
     pub async fn init(self: Paths) -> Paths {
         if !self.data.exists() {
             std::fs::create_dir_all(&self.data).expect("unable to create user data directory");
