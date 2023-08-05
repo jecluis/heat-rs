@@ -54,6 +54,36 @@ async fn journal_weight(
     Ok(true)
 }
 
+#[tauri::command]
+async fn journal_has_weight(
+    date: String,
+    mstate: tauri::State<'_, ManagedState>,
+) -> Result<bool, ()> {
+    let state = &mstate.state().await;
+    let db = &state.db;
+
+    match journal::weight::has_entry(&db, &date).await {
+        Err(_) => Err(()),
+        Ok(v) => Ok(v),
+    }
+}
+
+#[tauri::command]
+async fn get_weight_journal(
+    mstate: tauri::State<'_, ManagedState>,
+) -> Result<Vec<journal::weight::JournalWeight>, ()> {
+    let state = &mstate.state().await;
+    let db = &state.db;
+
+    match journal::weight::get_entries(&db).await {
+        Err(err) => {
+            log::error!("Unable to obtain weight journal: {}", err);
+            return Err(());
+        }
+        Ok(v) => Ok(v),
+    }
+}
+
 async fn setup_db(path: &std::path::PathBuf) -> db::DB {
     let mut handle = db::DB::new(&path).setup().await;
     handle.connect().await;
@@ -76,7 +106,11 @@ async fn main() {
                 paths,
             }),
         })
-        .invoke_handler(tauri::generate_handler![journal_weight])
+        .invoke_handler(tauri::generate_handler![
+            journal_weight,
+            journal_has_weight,
+            get_weight_journal
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

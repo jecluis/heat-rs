@@ -16,6 +16,11 @@ import { Injectable } from "@angular/core";
 import { invoke } from "@tauri-apps/api";
 import { getVersion as tauriGetVersion } from "@tauri-apps/api/app";
 
+export type WeightJournalEntry = {
+  date: string;
+  value: number;
+};
+
 @Injectable({
   providedIn: "root",
 })
@@ -31,5 +36,13 @@ export class TauriService {
       date,
       value,
     });
+  }
+
+  public async hasWeight(date: string): Promise<boolean> {
+    return invoke("journal_has_weight", { date });
+  }
+
+  public async getWeightJournal(): Promise<WeightJournalEntry[]> {
+    return invoke("get_weight_journal");
   }
 }

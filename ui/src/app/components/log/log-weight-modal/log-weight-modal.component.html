@@ -31,7 +31,9 @@ limitations under the License.
           <input class="form-control" placeholder="yyyy-mm-dd" name="selectedPickerDate"
                  ngbDatepicker #d="ngbDatepicker" [startDate]="selectedDate"
                  [(ngModel)]="selectedDate" [value]="formatter.format(selectedDate)" required
-                 #selectedPickerDate="ngModel" [class.is-invalid]="selectedPickerDate.invalid" />
+                 #selectedPickerDate="ngModel" [class.is-invalid]="selectedPickerDate.invalid"
+                 [dayTemplate]="maybeLoggedDay" [dayTemplateData]="extraTemplateData"
+                 [markDisabled]="isDisabled" [maxDate]="today" />
           <button class="btn btn-outline-secondary mdi mdi-calendar" (click)="d.toggle()"
                   type="button"></button>
         </div>
@@ -60,3 +62,12 @@ limitations under the License.
   <button type="button" class="btn btn-primary" (click)="submit()"
           [disabled]="weightKg.invalid || selectedPickerDate.invalid">Save</button>
 </div>
+
+<ng-template #maybeLoggedDay let-date let-extra="data" let-currentMonth="currentMonth"
+             let-selected="selected" let-disabled="disabled" let-focused="focused">
+  <span class="maybe-logged-day" [class.is-logged]="extra.logged"
+        [class.focused]="focused && !extra.logged" [class.bg-primary]="selected"
+        [class.disabled]="disabled && !extra.logged">
+    {{date.day}}
+  </span>
+</ng-template>

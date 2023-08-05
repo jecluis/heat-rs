@@ -15,6 +15,21 @@
 use std::str::FromStr;
 
 use crate::{db::DB, errors::HeatError};
+use chrono::TimeZone;
+
+#[derive(sqlx::FromRow)]
+struct TableWeightEntry {
+    pub date: i64,
+    pub value: f32,
+    #[allow(dead_code)]
+    pub added_at: i64,
+}
+
+#[derive(serde::Serialize)]
+pub struct JournalWeight {
+    pub date: chrono::NaiveDate,
+    pub value: f32,
+}
 
 fn date_str_to_ts(date: &String) -> i64 {
     chrono::NaiveDate::from_str(&date)
@@ -74,4 +89,29 @@ pub async fn has_entry(db: &DB, date: &String) -> Result<bool, HeatError> {
             return Err(HeatError::Generic);
         }
     }
+}
+
+pub async fn get_entries(db: &DB) -> Result<Vec<JournalWeight>, HeatError> {
+    let entries =
+        match sqlx::query_as::<_, TableWeightEntry>("SELECT date, value, added_at FROM log_weight")
+            .fetch_all(db.pool())
+            .await
+        {
+            Ok(res) => res,
+            Err(err) => {
+                log::error!("Error fetching entries: {}", err);
+                return Err(HeatError::Generic);
+            }
+        };
+
+    let mut result: Vec<JournalWeight> = vec![];
+    for entry in entries {
+        let dt = chrono::Utc.timestamp_opt(entry.date, 0).unwrap();
+        result.push(JournalWeight {
+            date: dt.date_naive(),
+            value: entry.value,
+        });
+    }
+
+    Ok(result)
 }
