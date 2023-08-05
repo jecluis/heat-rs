@@ -12,24 +12,4 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from "@angular/core";
-import { invoke } from "@tauri-apps/api";
-import { getVersion as tauriGetVersion } from "@tauri-apps/api/app";
-
-@Injectable({
-  providedIn: "root",
-})
-export class TauriService {
-  public constructor() {}
-
-  public async getVersion(): Promise<string> {
-    return await tauriGetVersion();
-  }
-
-  public async logWeight(date: string, value: number): Promise<boolean> {
-    return invoke("journal_weight", {
-      date,
-      value,
-    });
-  }
-}
+pub mod weight;

@@ -12,24 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from "@angular/core";
-import { invoke } from "@tauri-apps/api";
-import { getVersion as tauriGetVersion } from "@tauri-apps/api/app";
+use std::fmt::Display;
 
-@Injectable({
-  providedIn: "root",
-})
-export class TauriService {
-  public constructor() {}
+#[derive(Debug, Copy, Clone)]
+pub enum HeatError {
+    DBInFutureError,
+    ExistsError,
+    Generic,
+}
 
-  public async getVersion(): Promise<string> {
-    return await tauriGetVersion();
-  }
+impl Display for HeatError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let msg = match self {
+            HeatError::DBInFutureError => "database is in the future",
+            Self::ExistsError => "already exists",
+            HeatError::Generic => "generic error",
+        };
 
-  public async logWeight(date: string, value: number): Promise<boolean> {
-    return invoke("journal_weight", {
-      date,
-      value,
-    });
-  }
+        f.write_str(msg)
+    }
 }

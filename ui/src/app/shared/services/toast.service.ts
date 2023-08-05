@@ -56,4 +56,20 @@ export class ToastService {
       icon: icon,
     });
   }
+
+  public showErrorBoom(text: string) {
+    this.show(text, {
+      classname: "bg-danger text-dark",
+      delay: 5000,
+      icon: "virus-outline",
+    });
+  }
+
+  public showError(text: string) {
+    this.show(text, {
+      classname: "bg-danger text-dark",
+      delay: 5000,
+      icon: "alert-circle-outline",
+    });
+  }
 }

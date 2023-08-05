@@ -19,6 +19,7 @@ import {
   NgbDateParserFormatter,
   NgbDateStruct,
 } from "@ng-bootstrap/ng-bootstrap";
+import { TauriService } from "src/app/shared/services/tauri.service";
 import { ToastService } from "src/app/shared/services/toast.service";
 
 @Component({
@@ -35,6 +36,7 @@ export class LogWeightModalComponent {
     private calendarSvc: NgbCalendar,
     public formatter: NgbDateParserFormatter,
     public toastSvc: ToastService,
+    private tauriSvc: TauriService,
   ) {
     this.selectedDate = this.calendarSvc.getToday();
     this.weight = 0.0;
@@ -43,6 +45,19 @@ export class LogWeightModalComponent {
   public submit() {
     // TODO(joao): store the values somewhere
     this.activeModal.close();
-    this.toastSvc.showSuccess("Weight recorded!", "weight");
+    this.tauriSvc
+      .logWeight(this.formatter.format(this.selectedDate), this.weight)
+      .then((res: boolean) => {
+        if (!res) {
+          console.error("Unable to log weight!");
+          this.toastSvc.showError("Unable to log weight!");
+          return;
+        }
+        this.toastSvc.showSuccess("Weight recorded!", "weight");
+      })
+      .catch((err) => {
+        console.error("Error logging weight: ", err);
+        this.toastSvc.showErrorBoom("Error recording weight!");
+      });
   }
 }
