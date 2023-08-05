@@ -1,11 +1,11 @@
 [package]
-name = "app"
+name = "heat"
 version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
-license = ""
+description = "Heath Tracker"
+authors = ["Joao Eduardo Luis <joao@abysmo.io>"]
+license = "Apache-2.0"
 repository = ""
-default-run = "app"
+default-run = "heat"
 edition = "2021"
 rust-version = "1.60"
 
