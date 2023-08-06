@@ -10,8 +10,9 @@ import { LogButtonComponent } from "./components/log/log-button/log-button.compo
 import { LogWeightModalComponent } from "./components/log/log-weight-modal/log-weight-modal.component";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { GlobalToasterComponent } from "./shared/components/global-toaster/global-toaster.component";
-import { StatsLayoutComponent } from './layout/stats-layout/stats-layout.component';
-import { WeightStatsComponent } from './components/statistics/weight-stats/weight-stats.component';
+import { StatsLayoutComponent } from "./layout/stats-layout/stats-layout.component";
+import { WeightStatsComponent } from "./components/statistics/weight-stats/weight-stats.component";
+import { NgxEchartsModule } from "ngx-echarts";
 
 @NgModule({
   declarations: [
@@ -30,6 +31,9 @@ import { WeightStatsComponent } from './components/statistics/weight-stats/weigh
     NgbModule,
     FormsModule,
     ReactiveFormsModule,
+    NgxEchartsModule.forRoot({
+      echarts: () => import("echarts"),
+    }),
   ],
   providers: [],
   bootstrap: [AppComponent],

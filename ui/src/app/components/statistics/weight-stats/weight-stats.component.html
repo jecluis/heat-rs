@@ -13,9 +13,15 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<div>
-  <div *ngFor="let entry of weightEntries">
-    <span>{{entry.date}}</span>
-    <span class="ms-2">{{entry.value | number:'1.2'}} Kg</span>
+<div class="row">
+  <div class="col-3">
+    <div *ngFor="let entry of weightEntries">
+      <span>{{entry.date}}</span>
+      <span class="ms-2">{{entry.value | number:'1.2'}} Kg</span>
+    </div>
+  </div>
+
+  <div class="col-9">
+    <div echarts [options]="chartOptions" [merge]="chartUpdateOptions"></div>
   </div>
 </div>
