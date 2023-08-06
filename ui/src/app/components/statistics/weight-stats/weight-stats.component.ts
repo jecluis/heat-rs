@@ -13,12 +13,9 @@
 // limitations under the License.
 
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { Subscription, interval } from "rxjs";
-import {
-  TauriService,
-  WeightJournalEntry,
-} from "src/app/shared/services/tauri.service";
-import { ToastService } from "src/app/shared/services/toast.service";
+import { Subscription } from "rxjs";
+import { WeightJournalService } from "src/app/shared/services/journal/weight-journal.service";
+import { WeightJournalEntry } from "src/app/shared/services/tauri.service";
 
 @Component({
   selector: "heat-weight-stats",
@@ -28,34 +25,19 @@ import { ToastService } from "src/app/shared/services/toast.service";
 export class WeightStatsComponent implements OnInit, OnDestroy {
   public weightEntries: WeightJournalEntry[] = [];
 
-  private intervalSubscription?: Subscription;
+  private journalSubscription?: Subscription;
 
-  public constructor(
-    private tauriSvc: TauriService,
-    private toastSvc: ToastService,
-  ) {}
+  public constructor(private journalSvc: WeightJournalService) {}
 
   public ngOnInit(): void {
-    this.intervalSubscription = interval(1000).subscribe({
-      next: () => {
-        this.updateList();
+    this.journalSubscription = this.journalSvc.journal.subscribe({
+      next: (entries: WeightJournalEntry[]) => {
+        this.weightEntries = entries;
       },
     });
   }
 
   public ngOnDestroy(): void {
-    this.intervalSubscription?.unsubscribe();
-  }
-
-  private updateList() {
-    this.tauriSvc
-      .getWeightJournal()
-      .then((res) => {
-        this.weightEntries = res;
-      })
-      .catch(() => {
-        this.toastSvc.showErrorBoom("Error obtaining weight journal");
-        this.intervalSubscription?.unsubscribe();
-      });
+    this.journalSubscription?.unsubscribe();
   }
 }

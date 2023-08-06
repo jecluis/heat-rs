@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import {
   NgbActiveModal,
   NgbCalendar,
@@ -20,10 +20,9 @@ import {
   NgbDateParserFormatter,
   NgbDateStruct,
 } from "@ng-bootstrap/ng-bootstrap";
-import {
-  TauriService,
-  WeightJournalEntry,
-} from "src/app/shared/services/tauri.service";
+import { Subscription } from "rxjs";
+import { WeightJournalService } from "src/app/shared/services/journal/weight-journal.service";
+import { WeightJournalEntry } from "src/app/shared/services/tauri.service";
 import { ToastService } from "src/app/shared/services/toast.service";
 
 @Component({
@@ -31,19 +30,21 @@ import { ToastService } from "src/app/shared/services/toast.service";
   templateUrl: "./log-weight-modal.component.html",
   styleUrls: ["./log-weight-modal.component.scss"],
 })
-export class LogWeightModalComponent implements OnInit {
+export class LogWeightModalComponent implements OnInit, OnDestroy {
   public selectedDate: NgbDateStruct;
   public weight: number;
   public today: NgbDate;
 
   public weightEntries: string[] = [];
 
+  private journalSubscription?: Subscription;
+
   public constructor(
     public activeModal: NgbActiveModal,
     private calendarSvc: NgbCalendar,
     public formatter: NgbDateParserFormatter,
     public toastSvc: ToastService,
-    private tauriSvc: TauriService,
+    private journalSvc: WeightJournalService,
   ) {
     this.today = this.calendarSvc.getToday();
     this.selectedDate = this.today;
@@ -51,32 +52,23 @@ export class LogWeightModalComponent implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.tauriSvc
-      .getWeightJournal()
-      .then((res: WeightJournalEntry[]) => {
+    this.journalSubscription = this.journalSvc.journal.subscribe({
+      next: (res: WeightJournalEntry[]) => {
         this.weightEntries = res.map((entry: WeightJournalEntry) => entry.date);
-      })
-      .catch(() => {
-        this.toastSvc.showErrorBoom("Unable to obtain weight journal entries!");
-      });
+      },
+    });
+  }
+
+  public ngOnDestroy(): void {
+    this.journalSubscription?.unsubscribe();
   }
 
   public submit() {
     this.activeModal.close();
-    this.tauriSvc
-      .logWeight(this.formatter.format(this.selectedDate), this.weight)
-      .then((res: boolean) => {
-        if (!res) {
-          console.error("Unable to log weight!");
-          this.toastSvc.showError("Unable to log weight!");
-          return;
-        }
-        this.toastSvc.showSuccess("Weight recorded!", "weight");
-      })
-      .catch((err) => {
-        console.error("Error logging weight: ", err);
-        this.toastSvc.showErrorBoom("Error recording weight!");
-      });
+    this.journalSvc.logWeight(
+      this.formatter.format(this.selectedDate),
+      this.weight,
+    );
   }
 
   public isLogged = (date: NgbDate) =>
