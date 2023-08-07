@@ -103,7 +103,7 @@ export class WeightStatsComponent implements OnInit, OnDestroy {
         {
           name: "Weight",
           type: "line",
-          showSymbol: false,
+          showSymbol: true,
           data: this.chartData,
         },
       ],

@@ -12,5 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-pub mod exercise;
-pub mod weight;
+.maybe-logged-day {
+    text-align: center;
+    padding: 0.185rem 0.25rem;
+    border-radius: 0.25rem;
+    display: inline-block;
+    width: 2rem;
+}
+
+.maybe-logged-day:hover,
+.maybe-logged-day.focused {
+    background-color: #e6e6e6;
+}
+
+.is-logged {
+    background-color: green;
+    border-radius: 1rem;
+    color: white;
+}
+
+.disabled {
+    color: gray;
+}

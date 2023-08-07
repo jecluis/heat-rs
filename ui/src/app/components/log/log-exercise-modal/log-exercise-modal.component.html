@@ -1,0 +1,113 @@
+<!--
+Copyright 2023 Joao Eduardo Luis <joao@abysmo.io>
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+
+<div class="modal-header">
+  <h4 class="modal-title">Log Exercise</h4>
+  <button type="button" class="btn-close" aria-label="Close"
+          (click)="activeModal.dismiss('Closed')"></button>
+</div>
+
+<div class="modal-body">
+  <form class="needs-validation">
+    <div class="row mb-3">
+      <div class="col-3">
+        <span class="fw-bold">When</span>
+      </div>
+      <div class="col-5">
+        <div class="input-group">
+          <input class="form-control" placeholder="yyyy-mm-dd" name="selectedPickerDate"
+                 ngbDatepicker #d="ngbDatepicker" [startDate]="selectedDate"
+                 [(ngModel)]="selectedDate" [value]="formatter.format(selectedDate)" required
+                 #selectedPickerDate="ngModel" [class.is-invalid]="selectedPickerDate.invalid"
+                 [dayTemplate]="maybeLoggedDay" [dayTemplateData]="extraCalendarEntryData"
+                 [markDisabled]="isCalendarEntryDisabled" [maxDate]="today" />
+          <button class="btn btn-outline-secondary mdi mdi-calendar" (click)="d.toggle()"
+                  type="button"></button>
+        </div>
+      </div>
+      <div class="col-4">
+        <ngb-timepicker [(ngModel)]="exerciseTime" [spinners]="false"></ngb-timepicker>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-3">
+        <span class="fw-bold">Exercise</span>
+      </div>
+      <div class="col-5">
+        <select class="form-select" aria-label="Exercise type" name="exerciseSelectType"
+                #exerciseSelectType="ngModel" [(ngModel)]="exerciseType" aria-label="Exercise Type"
+                (ngModelChange)="exerciseType = $event" id="exerciseTypeSelect" required
+                [class.is-invalid]="exerciseType < 0 && (exerciseSelectType.dirty ||
+                  exerciseSelectType.touched)">
+          <option *ngFor="let exercise of exercises; let idx = index" [value]="idx">{{exercise}}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-3">
+        <span class="fw-bold">Calories</span>
+      </div>
+      <div class="col-5">
+        <div class="input-group">
+          <input class="form-control" placeholder="0" type="number" name="kcal" #kcal="ngModel"
+                 [(ngModel)]="exerciseCalories" aria-label="Exercise Calories (kcal)" step="1"
+                 (ngModelChange)="exerciseCalories = $event" id="kcalInput" required min="1"
+                 [class.is-invalid]="kcal.invalid && (kcal.dirty || kcal.touched)" />
+          <span class="input-group-text">kcal</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-3">
+        <span class="fw-bold">Duration</span>
+      </div>
+      <div class="col-5">
+        <div class="input-group">
+          <input class="form-control" placeholder="0" type="number" name="duration"
+                 #duration="ngModel" [(ngModel)]="exerciseMinutes"
+                 aria-label="Exercise Duration (minutes)" step="1"
+                 (ngModelChange)="exerciseMinutes = $event" id="durationInput" required min="1"
+                 [class.is-invalid]="duration.invalid && (duration.dirty || duration.touched)" />
+          <span class="input-group-text">minutes</span>
+        </div>
+      </div>
+    </div>
+
+  </form>
+  <hr />
+  <pre>{{exerciseTime|json}}</pre>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-outline-secondary"
+          (click)="activeModal.dismiss('cancel')">Cancel</button>
+  <button type="button" class="btn btn-primary" (click)="submit()" [disabled]="selectedPickerDate.invalid ||
+  exerciseSelectType.invalid || exerciseType < 0 || kcal.invalid || duration.invalid">Save</button>
+</div>
+
+<ng-template #maybeLoggedDay let-date let-extra="data" let-currentMonth="currentMonth"
+             let-selected="selected" let-disabled="disabled" let-focused="focused">
+  <span class="maybe-logged-day" [class.is-logged]="extra.logged"
+        [class.focused]="focused && !extra.logged" [class.bg-primary]="selected"
+        [class.disabled]="disabled && !extra.logged">
+    {{date.day}}
+  </span>
+</ng-template>

@@ -21,6 +21,13 @@ export type WeightJournalEntry = {
   value: number;
 };
 
+export type ExerciseJournalEntry = {
+  date: string;
+  exercise: string;
+  calories: number;
+  duration: number;
+};
+
 @Injectable({
   providedIn: "root",
 })
@@ -44,5 +51,27 @@ export class TauriService {
 
   public async getWeightJournal(): Promise<WeightJournalEntry[]> {
     return invoke("get_weight_journal");
+  }
+
+  public async logExercise(
+    date: string,
+    exerciseType: string,
+    calories: number,
+    duration: number,
+  ): Promise<boolean> {
+    return invoke("journal_exercise", {
+      date,
+      exercise: exerciseType,
+      calories,
+      duration,
+    });
+  }
+
+  public async getExerciseJournal(): Promise<ExerciseJournalEntry[]> {
+    return invoke("get_exercise_journal");
+  }
+
+  public async getExerciseTypes(): Promise<string[]> {
+    return invoke("get_exercise_types");
   }
 }

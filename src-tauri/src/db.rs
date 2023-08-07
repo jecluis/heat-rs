@@ -89,6 +89,25 @@ async fn create_db_schema(uri: &str) -> Result<(), sqlx::Error> {
         value       REAL NOT NULL,
         added_at    INTEGER NOT NULL
     );
+    CREATE TABLE IF NOT EXISTS log_exercise (
+        id              INTEGER PRIMARY KEY NOT NULL,
+        datetime        INTEGER NOT NULL,
+        exercise_id     INTEGER NOT NULL,
+        calories        INTEGER NOT NULL,
+        duration_sec    INTEGER NOT NULL,
+        added_at        INTEGER NOT NULL,
+        FOREIGN KEY (exercise_id) REFERENCES exercises (id)
+    );
+    CREATE TABLE IF NOT EXISTS exercises (
+        id              INTEGER PRIMARY KEY NOT NULL,
+        name            TEXT UNIQUE NOT NULL
+    );
+    INSERT INTO exercises (id, name) VALUES (1, 'rowing');
+    INSERT INTO exercises (id, name) VALUES (2, 'walking');
+    INSERT INTO exercises (id, name) VALUES (3, 'running');
+    INSERT INTO exercises (id, name) VALUES (4, 'padel');
+    INSERT INTO exercises (id, name) VALUES (5, 'standing');
+    INSERT INTO exercises (id, name) VALUES (6, 'functional');
     ";
 
     match sqlx::query(&query).execute(&mut *tx).await {

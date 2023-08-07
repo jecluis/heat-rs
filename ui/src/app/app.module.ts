@@ -13,6 +13,7 @@ import { GlobalToasterComponent } from "./shared/components/global-toaster/globa
 import { StatsLayoutComponent } from "./layout/stats-layout/stats-layout.component";
 import { WeightStatsComponent } from "./components/statistics/weight-stats/weight-stats.component";
 import { NgxEchartsModule } from "ngx-echarts";
+import { LogExerciseModalComponent } from "./components/log/log-exercise-modal/log-exercise-modal.component";
 
 @NgModule({
   declarations: [
@@ -24,6 +25,7 @@ import { NgxEchartsModule } from "ngx-echarts";
     GlobalToasterComponent,
     StatsLayoutComponent,
     WeightStatsComponent,
+    LogExerciseModalComponent,
   ],
   imports: [
     BrowserModule,

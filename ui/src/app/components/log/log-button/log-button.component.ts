@@ -15,6 +15,7 @@
 import { Component } from "@angular/core";
 import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { LogWeightModalComponent } from "../log-weight-modal/log-weight-modal.component";
+import { LogExerciseModalComponent } from "../log-exercise-modal/log-exercise-modal.component";
 
 @Component({
   selector: "heat-log-button",
@@ -26,5 +27,9 @@ export class LogButtonComponent {
 
   public openLogWeight() {
     this.modalSvc.open(LogWeightModalComponent);
+  }
+
+  public openLogExercise() {
+    this.modalSvc.open(LogExerciseModalComponent);
   }
 }
