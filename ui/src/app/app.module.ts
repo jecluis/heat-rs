@@ -18,6 +18,8 @@ import { BsDatepickerModule } from "ngx-bootstrap/datepicker";
 import { ModalModule } from "ngx-bootstrap/modal";
 import { AlertModule } from "ngx-bootstrap/alert";
 import { BsDropdownModule } from "ngx-bootstrap/dropdown";
+import { ExerciseStatsComponent } from "./components/statistics/exercise-stats/exercise-stats.component";
+import { TabsModule } from "ngx-bootstrap/tabs";
 
 @NgModule({
   declarations: [
@@ -30,6 +32,7 @@ import { BsDropdownModule } from "ngx-bootstrap/dropdown";
     StatsLayoutComponent,
     WeightStatsComponent,
     LogExerciseModalComponent,
+    ExerciseStatsComponent,
   ],
   imports: [
     BrowserModule,
@@ -44,6 +47,7 @@ import { BsDropdownModule } from "ngx-bootstrap/dropdown";
     ModalModule.forRoot(),
     AlertModule.forRoot(),
     BsDropdownModule.forRoot(),
+    TabsModule.forRoot(),
   ],
   providers: [],
   bootstrap: [AppComponent],

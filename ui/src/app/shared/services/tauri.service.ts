@@ -22,7 +22,7 @@ export type WeightJournalEntry = {
 };
 
 export type ExerciseJournalEntry = {
-  date: string;
+  datetime: string;
   exercise: string;
   calories: number;
   duration: number;

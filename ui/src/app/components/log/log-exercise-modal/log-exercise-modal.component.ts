@@ -40,7 +40,6 @@ export class LogExerciseModalComponent implements OnInit, OnDestroy {
 
   public exercises: string[] = [];
   public existingEntries: DatepickerDateCustomClasses[] = [];
-  public disabledDates: Date[] = [];
   private journalSubscription?: Subscription;
 
   public constructor(
@@ -65,8 +64,7 @@ export class LogExerciseModalComponent implements OnInit, OnDestroy {
     this.journalSubscription = this.journalSvc.journal.subscribe({
       next: (res: ExerciseJournalEntry[]) => {
         this.existingEntries = res.map((entry: ExerciseJournalEntry) => {
-          let d = new Date(entry.date);
-          this.disabledDates.push(d);
+          let d = new Date(entry.datetime);
           return {
             date: d,
             classes: ["bg-success", "text-light"],

@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, Input, OnDestroy, OnInit } from "@angular/core";
 import {
   DefaultLabelFormatterCallbackParams,
   EChartsOption,
   TooltipComponentFormatterCallbackParams,
 } from "echarts";
 import { Subscription } from "rxjs";
-import { WeightJournalService } from "src/app/shared/services/journal/weight-journal.service";
-import { WeightJournalEntry } from "src/app/shared/services/tauri.service";
+import { ExerciseJournalService } from "src/app/shared/services/journal/exercise-journal.service";
+import { ExerciseJournalEntry } from "src/app/shared/services/tauri.service";
 
 type ChartData = {
   name: string;
@@ -28,40 +28,71 @@ type ChartData = {
 };
 
 @Component({
-  selector: "heat-weight-stats",
-  templateUrl: "./weight-stats.component.html",
-  styleUrls: ["./weight-stats.component.scss"],
+  selector: "heat-exercise-stats",
+  templateUrl: "./exercise-stats.component.html",
+  styleUrls: ["./exercise-stats.component.scss"],
 })
-export class WeightStatsComponent implements OnInit, OnDestroy {
-  public weightEntries: WeightJournalEntry[] = [];
+export class ExerciseStatsComponent implements OnInit, OnDestroy {
+  @Input("type")
+  public chartType?: string;
+
+  public exerciseEntries: ExerciseJournalEntry[] = [];
   public chartOptions!: EChartsOption;
   public chartUpdateOptions!: EChartsOption;
   public chartData: ChartData[] = [];
 
   private journalSubscription?: Subscription;
 
-  public constructor(private journalSvc: WeightJournalService) {}
+  public constructor(private journalSvc: ExerciseJournalService) {}
 
   public ngOnInit(): void {
+    if (!this.chartType) {
+      console.error("Chart type not set!");
+      return;
+    }
+
     this.journalSubscription = this.journalSvc.journal.subscribe({
-      next: (entries: WeightJournalEntry[]) => {
-        this.weightEntries = entries;
+      next: (entries: ExerciseJournalEntry[]) => {
+        if (!this.chartType) {
+          console.error("Chart type not set!");
+          return;
+        }
+
+        this.exerciseEntries = entries;
         this.chartData = [];
-        this.weightEntries.forEach((entry: WeightJournalEntry) => {
+        this.exerciseEntries.forEach((entry: ExerciseJournalEntry) => {
+          let value = 0;
+          if (this.chartType! === "duration") {
+            value = entry.duration;
+          } else if (this.chartType! === "calories") {
+            value = entry.calories;
+          }
+
           this.chartData.push({
-            name: entry.date,
-            value: [entry.date.replaceAll("-", "/"), entry.value],
+            name: entry.datetime,
+            value: [entry.datetime, value],
           });
         });
         this.chartUpdateOptions = {
           series: [{ data: this.chartData }],
         };
+        console.log(`chart(${this.chartType}) data:`, this.chartData);
       },
     });
 
+    let chartTitle = "N/A";
+    let chartUnit = "N/A";
+    if (this.chartType! === "duration") {
+      chartTitle = "Exercise Duration";
+      chartUnit = "min";
+    } else if (this.chartType! === "calories") {
+      chartTitle = "Calories Spent";
+      chartUnit = "kcal";
+    }
+
     this.chartOptions = {
       title: {
-        text: "Weight",
+        text: chartTitle,
       },
       tooltip: {
         trigger: "axis",
@@ -79,7 +110,8 @@ export class WeightStatsComponent implements OnInit, OnDestroy {
             date.getFullYear() +
             " : " +
             Math.round((value_arr[1] + Number.EPSILON) * 100) / 100 +
-            " Kg"
+            " " +
+            chartUnit
           );
         },
         axisPointer: {
@@ -101,9 +133,8 @@ export class WeightStatsComponent implements OnInit, OnDestroy {
       },
       series: [
         {
-          name: "Weight",
-          type: "line",
-          showSymbol: true,
+          name: chartTitle,
+          type: "bar",
           data: this.chartData,
         },
       ],

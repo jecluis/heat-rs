@@ -13,16 +13,17 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<div>
-  <tabset>
-    <tab heading="Weight" id="weightTabID" #weightTab="tab">
-      <heat-weight-stats *ngIf="weightTab.active"></heat-weight-stats>
-    </tab>
-    <tab heading="Calories" id="caloriesTabID" #caloriesTab="tab">
-      <heat-exercise-stats *ngIf="caloriesTab.active" type="calories"></heat-exercise-stats>
-    </tab>
-    <tab heading="Duration" id="durationTabID" #durationTab="tab">
-      <heat-exercise-stats *ngIf="durationTab.active" type="duration"></heat-exercise-stats>
-    </tab>
-  </tabset>
+<alert type="danger" *ngIf="!chartType">Chart Type not set!</alert>
+
+<div class="row" *ngIf="!!chartType">
+  <div class="col-3">
+    <div *ngFor="let entry of exerciseEntries">
+      <span>{{entry.datetime}}</span>
+      <span class="ms-2">{{entry.calories | number:'1.2'}} kcal</span>
+    </div>
+  </div>
+
+  <div class="col-9">
+    <div echarts [options]="chartOptions" [merge]="chartUpdateOptions"></div>
+  </div>
 </div>

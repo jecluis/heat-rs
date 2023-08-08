@@ -18,15 +18,19 @@ use std::fmt::Display;
 pub enum HeatError {
     DBInFutureError,
     ExistsError,
-    Generic,
+    UnknownExerciseError,
+    InvalidParametersError,
+    GenericError,
 }
 
 impl Display for HeatError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let msg = match self {
             HeatError::DBInFutureError => "database is in the future",
-            Self::ExistsError => "already exists",
-            HeatError::Generic => "generic error",
+            HeatError::ExistsError => "already exists",
+            HeatError::UnknownExerciseError => "unknown exercise",
+            HeatError::InvalidParametersError => "invalid parameters",
+            HeatError::GenericError => "generic error",
         };
 
         f.write_str(msg)

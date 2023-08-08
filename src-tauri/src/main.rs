@@ -86,19 +86,19 @@ async fn get_weight_journal(
 
 #[tauri::command]
 async fn journal_exercise(
-    date: String,
+    date: chrono::DateTime<chrono::Utc>,
     exercise: String,
     calories: u32,
-    duration: u32,
+    duration: i64,
     mstate: tauri::State<'_, ManagedState>,
 ) -> Result<bool, ()> {
-    debug!(
-        "Logging exercise at {} type {} calories {} duration {}",
-        date, exercise, calories, duration
-    );
     let state = &mstate.state().await;
     let db = &state.db;
-    Ok(true)
+
+    match journal::exercise::journal(&db, &date, &exercise, &calories, &duration).await {
+        Ok(_) => Ok(true),
+        Err(_) => Err(()),
+    }
 }
 
 #[tauri::command]
@@ -107,7 +107,14 @@ async fn get_exercise_journal(
 ) -> Result<Vec<journal::exercise::JournalExercise>, ()> {
     let state = &mstate.state().await;
     let db = &state.db;
-    Err(())
+
+    match journal::exercise::get_entries(&db).await {
+        Ok(v) => Ok(v),
+        Err(err) => {
+            log::error!("Unable to obtain exercise journal: {}", err);
+            return Err(());
+        }
+    }
 }
 
 #[tauri::command]

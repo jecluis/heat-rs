@@ -31,7 +31,7 @@ limitations under the License.
           <input class="form-control" placeholder="yyyy-mm-dd" name="selectedPickerDate"
                  bsDatepicker #d="bsDatepicker" [bsConfig]="calendarConfig" [bsValue]="today"
                  [maxDate]="today" [(ngModel)]="selectedDate" #selectedPickerDate="ngModel"
-                 [dateCustomClasses]="existingEntries" [datesDisabled]="disabledDates"
+                 [dateCustomClasses]="existingEntries"
                  [class.is-invalid]="selectedPickerDate.invalid" required />
           <button class="btn btn-outline-secondary mdi mdi-calendar" (click)="d.toggle()"
                   type="button"></button>

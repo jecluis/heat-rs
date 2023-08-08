@@ -68,7 +68,7 @@ pub async fn journal(db: &DB, date: &String, value: &f32) -> Result<(), HeatErro
         Ok(_) => {}
         Err(err) => {
             log::error!("Error inserting weight entry to database: {}", err);
-            return Err(HeatError::Generic);
+            return Err(HeatError::GenericError);
         }
     };
 
@@ -86,7 +86,7 @@ pub async fn has_entry(db: &DB, date: &String) -> Result<bool, HeatError> {
         Ok(v) => Ok(v > 0),
         Err(err) => {
             log::error!("Error counting entries for date '{}': {}", date, err);
-            return Err(HeatError::Generic);
+            return Err(HeatError::GenericError);
         }
     }
 }
@@ -100,7 +100,7 @@ pub async fn get_entries(db: &DB) -> Result<Vec<JournalWeight>, HeatError> {
             Ok(res) => res,
             Err(err) => {
                 log::error!("Error fetching entries: {}", err);
-                return Err(HeatError::Generic);
+                return Err(HeatError::GenericError);
             }
         };
 
