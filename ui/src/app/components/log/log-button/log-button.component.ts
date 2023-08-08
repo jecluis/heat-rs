@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component } from "@angular/core";
-import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
+import { BsModalService } from "ngx-bootstrap/modal";
 import { LogWeightModalComponent } from "../log-weight-modal/log-weight-modal.component";
 import { LogExerciseModalComponent } from "../log-exercise-modal/log-exercise-modal.component";
 
@@ -23,13 +23,13 @@ import { LogExerciseModalComponent } from "../log-exercise-modal/log-exercise-mo
   styleUrls: ["./log-button.component.scss"],
 })
 export class LogButtonComponent {
-  public constructor(private modalSvc: NgbModal) {}
+  public constructor(private modalSvc: BsModalService) {}
 
   public openLogWeight() {
-    this.modalSvc.open(LogWeightModalComponent);
+    this.modalSvc.show(LogWeightModalComponent);
   }
 
   public openLogExercise() {
-    this.modalSvc.open(LogExerciseModalComponent);
+    this.modalSvc.show(LogExerciseModalComponent);
   }
 }

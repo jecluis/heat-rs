@@ -3,7 +3,6 @@ import { BrowserModule } from "@angular/platform-browser";
 
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
-import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
 import { WindowTitlebarComponent } from "./layout/window-titlebar/window-titlebar.component";
 import { MainLayoutComponent } from "./layout/main-layout/main-layout.component";
 import { LogButtonComponent } from "./components/log/log-button/log-button.component";
@@ -14,6 +13,11 @@ import { StatsLayoutComponent } from "./layout/stats-layout/stats-layout.compone
 import { WeightStatsComponent } from "./components/statistics/weight-stats/weight-stats.component";
 import { NgxEchartsModule } from "ngx-echarts";
 import { LogExerciseModalComponent } from "./components/log/log-exercise-modal/log-exercise-modal.component";
+import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+import { BsDatepickerModule } from "ngx-bootstrap/datepicker";
+import { ModalModule } from "ngx-bootstrap/modal";
+import { AlertModule } from "ngx-bootstrap/alert";
+import { BsDropdownModule } from "ngx-bootstrap/dropdown";
 
 @NgModule({
   declarations: [
@@ -30,12 +34,16 @@ import { LogExerciseModalComponent } from "./components/log/log-exercise-modal/l
   imports: [
     BrowserModule,
     AppRoutingModule,
-    NgbModule,
     FormsModule,
     ReactiveFormsModule,
     NgxEchartsModule.forRoot({
       echarts: () => import("echarts"),
     }),
+    BrowserAnimationsModule,
+    BsDatepickerModule.forRoot(),
+    ModalModule.forRoot(),
+    AlertModule.forRoot(),
+    BsDropdownModule.forRoot(),
   ],
   providers: [],
   bootstrap: [AppComponent],

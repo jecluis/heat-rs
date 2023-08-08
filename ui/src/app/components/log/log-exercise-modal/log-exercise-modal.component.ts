@@ -13,15 +13,11 @@
 // limitations under the License.
 
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { FormsModule } from "@angular/forms";
 import {
-  NgbActiveModal,
-  NgbCalendar,
-  NgbDate,
-  NgbDateParserFormatter,
-  NgbDateStruct,
-  NgbTimeStruct,
-} from "@ng-bootstrap/ng-bootstrap";
+  BsDatepickerConfig,
+  DatepickerDateCustomClasses,
+} from "ngx-bootstrap/datepicker";
+import { BsModalRef } from "ngx-bootstrap/modal";
 import { Subscription } from "rxjs";
 import { ExerciseJournalService } from "src/app/shared/services/journal/exercise-journal.service";
 import { ExerciseJournalEntry } from "src/app/shared/services/tauri.service";
@@ -34,37 +30,48 @@ const exercises = ["rowing", "running", "functional", "padel", "walking"];
   styleUrls: ["./log-exercise-modal.component.scss"],
 })
 export class LogExerciseModalComponent implements OnInit, OnDestroy {
-  public today: NgbDate;
-  public selectedDate: NgbDateStruct;
-  public exerciseTime: NgbTimeStruct;
+  public today: Date;
+  public selectedDate: Date;
   public exerciseType: number;
   public exerciseCalories: number;
   public exerciseMinutes: number;
 
+  public calendarConfig: Partial<BsDatepickerConfig>;
+
   public exercises: string[] = [];
-  public journalEntries: string[] = [];
+  public existingEntries: DatepickerDateCustomClasses[] = [];
+  public disabledDates: Date[] = [];
   private journalSubscription?: Subscription;
 
   public constructor(
-    public activeModal: NgbActiveModal,
-    private calendarSvc: NgbCalendar,
-    public formatter: NgbDateParserFormatter,
+    public modalRef: BsModalRef,
     private journalSvc: ExerciseJournalService,
   ) {
-    this.today = this.calendarSvc.getToday();
+    this.today = new Date();
     this.selectedDate = this.today;
-    this.exerciseTime = { hour: 1, minute: 0, second: 0 };
     this.exerciseType = -1;
     this.exerciseCalories = 0;
     this.exerciseMinutes = 0;
+
+    this.calendarConfig = {
+      dateInputFormat: "YYYY-MM-DD @ HH:mm",
+      keepDatesOutOfRules: true,
+      withTimepicker: true,
+      keepDatepickerOpened: true,
+    };
   }
 
   public ngOnInit(): void {
     this.journalSubscription = this.journalSvc.journal.subscribe({
       next: (res: ExerciseJournalEntry[]) => {
-        this.journalEntries = res.map(
-          (entry: ExerciseJournalEntry) => entry.date,
-        );
+        this.existingEntries = res.map((entry: ExerciseJournalEntry) => {
+          let d = new Date(entry.date);
+          this.disabledDates.push(d);
+          return {
+            date: d,
+            classes: ["bg-success", "text-light"],
+          };
+        });
       },
     });
 
@@ -81,26 +88,12 @@ export class LogExerciseModalComponent implements OnInit, OnDestroy {
   }
 
   public submit() {
-    this.activeModal.close();
+    this.modalRef.hide();
     this.journalSvc.logExercise(
-      this.formatter.format(this.selectedDate),
+      this.selectedDate.toISOString(),
       exercises[this.exerciseType],
       this.exerciseCalories,
       this.exerciseMinutes,
     );
   }
-
-  public isCalendarEntryLogged = (date: NgbDate) =>
-    this.journalEntries.filter((v: string) => v === this.formatter.format(date))
-      .length > 0;
-
-  public isCalendarEntryDisabled = (
-    date: NgbDate,
-    current?: { year: number; month: number },
-  ) => date > this.today || this.isCalendarEntryLogged(date);
-
-  public extraCalendarEntryData = (
-    date: NgbDate,
-    current?: { year: number; month: number },
-  ) => ({ logged: this.isCalendarEntryLogged(date) });
 }

@@ -17,6 +17,7 @@
 import { Injectable, TemplateRef } from "@angular/core";
 
 export type ToastOptions = {
+  type: string;
   classname?: string;
   delay?: number;
   icon?: string;
@@ -36,7 +37,7 @@ export class ToastService {
 
   public show(
     textOrTpl: string | TemplateRef<any>,
-    options: ToastOptions = {},
+    options: ToastOptions = { type: "info" },
   ) {
     this.toasts.push({ textOrTpl, ...options });
   }
@@ -51,7 +52,7 @@ export class ToastService {
 
   public showSuccess(text: string, icon: string | undefined = undefined) {
     this.show(text, {
-      classname: "bg-success text-light",
+      type: "success",
       delay: 3000,
       icon: icon,
     });
@@ -59,7 +60,7 @@ export class ToastService {
 
   public showErrorBoom(text: string) {
     this.show(text, {
-      classname: "bg-danger text-dark",
+      type: "danger",
       delay: 5000,
       icon: "virus-outline",
     });
@@ -67,7 +68,7 @@ export class ToastService {
 
   public showError(text: string) {
     this.show(text, {
-      classname: "bg-danger text-dark",
+      type: "danger",
       delay: 5000,
       icon: "alert-circle-outline",
     });

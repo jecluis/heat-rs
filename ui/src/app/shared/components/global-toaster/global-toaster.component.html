@@ -14,14 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-<ngb-toast *ngFor="let toast of toastSvc.toasts" [autohide]="true" [delay]="toast.delay || 5000"
-           (hidden)="toastSvc.remove(toast)" [class]="toast.classname">
-  <ng-template [ngIf]="isTemplate(toast)" [ngIfElse]="text">
-    <ng-template [ngTemplateOutlet]="getTemplate(toast)"></ng-template>
-  </ng-template>
+<div *ngFor="let toast of toastSvc.toasts">
+  <alert [dismissOnTimeout]="toast.delay || 5000" [type]="toast.type"
+         (onClosed)="toastSvc.remove(toast)">
+    <ng-template [ngIf]="isTemplate(toast)" [ngIfElse]="text">
+      <ng-template [ngTemplateOutlet]="getTemplate(toast)"></ng-template>
+    </ng-template>
 
-  <ng-template #text>
-    <i class="mdi mdi-{{toast.icon}}" *ngIf="!!toast.icon"></i>
-    <span class="ms-2">{{toast.textOrTpl}}</span>
-  </ng-template>
-</ngb-toast>
+    <ng-template #text>
+      <i class="mdi mdi-{{toast.icon}}" *ngIf="!!toast.icon"></i>
+      <span class="ms-2">{{toast.textOrTpl}}</span>
+    </ng-template>
+  </alert>
+</div>

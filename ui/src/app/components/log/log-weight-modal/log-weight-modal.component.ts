@@ -14,12 +14,10 @@
 
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import {
-  NgbActiveModal,
-  NgbCalendar,
-  NgbDate,
-  NgbDateParserFormatter,
-  NgbDateStruct,
-} from "@ng-bootstrap/ng-bootstrap";
+  BsDatepickerConfig,
+  DatepickerDateCustomClasses,
+} from "ngx-bootstrap/datepicker";
+import { BsModalRef } from "ngx-bootstrap/modal";
 import { Subscription } from "rxjs";
 import { WeightJournalService } from "src/app/shared/services/journal/weight-journal.service";
 import { WeightJournalEntry } from "src/app/shared/services/tauri.service";
@@ -31,30 +29,40 @@ import { ToastService } from "src/app/shared/services/toast.service";
   styleUrls: ["./log-weight-modal.component.scss"],
 })
 export class LogWeightModalComponent implements OnInit, OnDestroy {
-  public selectedDate: NgbDateStruct;
+  public selectedDate: Date;
   public weight: number;
-  public today: NgbDate;
+  public today: Date;
 
-  public weightEntries: string[] = [];
+  public calendarConfig: Partial<BsDatepickerConfig>;
+
+  public existingEntries: DatepickerDateCustomClasses[] = [];
+  public disabledDates: Date[] = [];
 
   private journalSubscription?: Subscription;
 
   public constructor(
-    public activeModal: NgbActiveModal,
-    private calendarSvc: NgbCalendar,
-    public formatter: NgbDateParserFormatter,
+    public modalRef: BsModalRef,
     public toastSvc: ToastService,
     private journalSvc: WeightJournalService,
   ) {
-    this.today = this.calendarSvc.getToday();
+    this.today = new Date();
     this.selectedDate = this.today;
     this.weight = 0.0;
+
+    this.calendarConfig = { dateInputFormat: "YYY-MM-DD" };
   }
 
   public ngOnInit(): void {
     this.journalSubscription = this.journalSvc.journal.subscribe({
       next: (res: WeightJournalEntry[]) => {
-        this.weightEntries = res.map((entry: WeightJournalEntry) => entry.date);
+        this.existingEntries = res.map((entry: WeightJournalEntry) => {
+          let d = new Date(entry.date);
+          this.disabledDates.push(d);
+          return {
+            date: d,
+            classes: ["bg-success", "text-light"],
+          };
+        });
       },
     });
   }
@@ -64,24 +72,7 @@ export class LogWeightModalComponent implements OnInit, OnDestroy {
   }
 
   public submit() {
-    this.activeModal.close();
-    this.journalSvc.logWeight(
-      this.formatter.format(this.selectedDate),
-      this.weight,
-    );
+    this.modalRef.hide();
+    this.journalSvc.logWeight(this.selectedDate.toISOString(), this.weight);
   }
-
-  public isLogged = (date: NgbDate) =>
-    this.weightEntries.filter((v: string) => v === this.formatter.format(date))
-      .length > 0;
-
-  public isDisabled = (
-    date: NgbDate,
-    current?: { year: number; month: number },
-  ) => date > this.today || this.isLogged(date);
-
-  public extraTemplateData = (
-    date: NgbDate,
-    current?: { year: number; month: number },
-  ) => ({ logged: this.isLogged(date) });
 }

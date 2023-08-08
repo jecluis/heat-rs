@@ -13,24 +13,33 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<div ngbDropdown class="d-inline-block">
-  <button type="button" class="btn btn-warning btn-sm text-dark" id="logDropdown" ngbDropdownToggle>
+<div dropdown class="btn-group">
+  <button type="button" class="btn btn-warning btn-sm text-dark dropdown-toggle" id="logDropdown"
+          dropdownToggle aria-controls="logDropdownMenu">
     <i class="mdi mdi-plus"></i>
     <span class="">Log</span>
   </button>
 
-  <div ngbDropdownMenu aria-labelledby="logDropdown">
-    <button ngbDropdownItem (click)="openLogWeight()">
-      <i class="mdi mdi-weight"></i>
-      <span class="ms-2">Weight</span>
-    </button>
-    <button ngbDropdownItem (click)="openLogExercise()">
-      <i class="mdi mdi-weight-lifter"></i>
-      <span class="ms-2">Exercise</span>
-    </button>
-    <button ngbDropdownItem disabled="">
-      <i class="mdi mdi-noodles"></i>
-      <span class="ms-2">Food</span>
-    </button>
-  </div>
+  <ul id="logDropdownMenu" *dropdownMenu aria-labelledby="logDropdown" role="menu"
+      class="dropdown-menu">
+
+    <li role="menuitem">
+      <button class="dropdown-item" (click)="openLogWeight()">
+        <i class="mdi mdi-weight"></i>
+        <span class="ms-2">Weight</span>
+      </button>
+    </li>
+    <li role="menuitem">
+      <button class="dropdown-item" (click)="openLogExercise()">
+        <i class="mdi mdi-weight-lifter"></i>
+        <span class="ms-2">Exercise</span>
+      </button>
+    </li>
+    <li role="menuitem">
+      <button class="dropdown-item" disabled>
+        <i class="mdi mdi-noodles"></i>
+        <span class="ms-2">Food</span>
+      </button>
+    </li>
+  </ul>
 </div>
