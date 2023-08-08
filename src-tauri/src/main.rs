@@ -35,7 +35,7 @@ impl ManagedState {
 
 #[tauri::command]
 async fn journal_weight(
-    date: String,
+    date: chrono::DateTime<chrono::Utc>,
     value: f32,
     mstate: tauri::State<'_, ManagedState>,
 ) -> Result<bool, ()> {
@@ -52,20 +52,6 @@ async fn journal_weight(
     };
 
     Ok(true)
-}
-
-#[tauri::command]
-async fn journal_has_weight(
-    date: String,
-    mstate: tauri::State<'_, ManagedState>,
-) -> Result<bool, ()> {
-    let state = &mstate.state().await;
-    let db = &state.db;
-
-    match journal::weight::has_entry(&db, &date).await {
-        Err(_) => Err(()),
-        Ok(v) => Ok(v),
-    }
 }
 
 #[tauri::command]
@@ -158,7 +144,6 @@ async fn main() {
         })
         .invoke_handler(tauri::generate_handler![
             journal_weight,
-            journal_has_weight,
             get_weight_journal,
             journal_exercise,
             get_exercise_journal,

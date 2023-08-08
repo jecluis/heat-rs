@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::str::FromStr;
-
 use crate::{db::DB, errors::HeatError};
 use chrono::TimeZone;
 
@@ -31,20 +29,20 @@ pub struct JournalWeight {
     pub value: f32,
 }
 
-fn date_str_to_ts(date: &String) -> i64 {
-    chrono::NaiveDate::from_str(&date)
-        .unwrap()
-        .and_hms_opt(0, 0, 0)
-        .unwrap()
-        .timestamp()
+fn date_to_ts(date: &chrono::DateTime<chrono::Utc>) -> i64 {
+    date.date_naive().and_hms_opt(0, 0, 0).unwrap().timestamp()
 }
 
-pub async fn journal(db: &DB, date: &String, value: &f32) -> Result<(), HeatError> {
+pub async fn journal(
+    db: &DB,
+    date: &chrono::DateTime<chrono::Utc>,
+    value: &f32,
+) -> Result<(), HeatError> {
     log::debug!("journal weight: date = {}, value = {}", date, value);
 
-    let date_ts = date_str_to_ts(&date);
+    let date_ts = date_to_ts(&date);
 
-    match has_entry(&db, &date).await {
+    match has_entry(&db, &date_ts).await {
         Err(err) => {
             log::error!("Unable to journal: {}", err);
             return Err(err);
@@ -75,9 +73,7 @@ pub async fn journal(db: &DB, date: &String, value: &f32) -> Result<(), HeatErro
     Ok(())
 }
 
-pub async fn has_entry(db: &DB, date: &String) -> Result<bool, HeatError> {
-    let date_ts = date_str_to_ts(&date);
-
+pub async fn has_entry(db: &DB, date_ts: &i64) -> Result<bool, HeatError> {
     match sqlx::query_scalar::<_, u32>("SELECT count(date) FROM log_weight WHERE date = ?")
         .bind(&date_ts)
         .fetch_one(db.pool())
@@ -85,7 +81,7 @@ pub async fn has_entry(db: &DB, date: &String) -> Result<bool, HeatError> {
     {
         Ok(v) => Ok(v > 0),
         Err(err) => {
-            log::error!("Error counting entries for date '{}': {}", date, err);
+            log::error!("Error counting entries for date '{}': {}", date_ts, err);
             return Err(HeatError::GenericError);
         }
     }
