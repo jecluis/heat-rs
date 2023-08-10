@@ -21,6 +21,7 @@ import {
 import { Subscription } from "rxjs";
 import { ExerciseJournalService } from "src/app/shared/services/journal/exercise-journal.service";
 import { ExerciseJournalEntry } from "src/app/shared/services/tauri.service";
+import * as moment from "moment";
 
 type ChartData = {
   name: string;
@@ -68,9 +69,12 @@ export class ExerciseStatsComponent implements OnInit, OnDestroy {
             value = entry.calories;
           }
 
+          let dtStr = moment(entry.datetime).format("YYYY-MM-DD");
+          console.debug("datetime: ", entry.datetime);
+          console.debug("dtStr: ", dtStr);
           this.chartData.push({
-            name: entry.datetime,
-            value: [entry.datetime, value],
+            name: dtStr,
+            value: [dtStr, value],
           });
         });
         this.chartUpdateOptions = {
@@ -103,12 +107,7 @@ export class ExerciseStatsComponent implements OnInit, OnDestroy {
           let value_arr = params_entry.value as any[];
           const date = new Date(params_entry.name);
           return (
-            date.getDate() +
-            "/" +
-            (date.getMonth() + 1) +
-            "/" +
-            date.getFullYear() +
-            " : " +
+            moment(date).format("YYYY-MM-DD : ") +
             Math.round((value_arr[1] + Number.EPSILON) * 100) / 100 +
             " " +
             chartUnit

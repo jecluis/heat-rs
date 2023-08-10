@@ -15,7 +15,7 @@ limitations under the License.
 -->
 <alert type="danger" *ngIf="!chartType">Chart Type not set!</alert>
 
-<div class="row" *ngIf="!!chartType">
+<div class="row me-0 ms-0" *ngIf="!!chartType">
   <div class="col-3">
     <div *ngFor="let entry of exerciseEntries">
       <span>{{entry.datetime}}</span>
