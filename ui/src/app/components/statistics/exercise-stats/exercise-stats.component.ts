@@ -124,6 +124,7 @@ export class ExerciseStatsComponent implements OnInit, OnDestroy {
         },
       },
       yAxis: {
+        name: chartUnit,
         type: "value",
         boundaryGap: [0, "100%"],
         splitLine: {

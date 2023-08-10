@@ -21,6 +21,7 @@ import {
 import { Subscription } from "rxjs";
 import { WeightJournalService } from "src/app/shared/services/journal/weight-journal.service";
 import { WeightJournalEntry } from "src/app/shared/services/tauri.service";
+import * as moment from "moment";
 
 type ChartData = {
   name: string;
@@ -72,12 +73,7 @@ export class WeightStatsComponent implements OnInit, OnDestroy {
           let value_arr = params_entry.value as any[];
           const date = new Date(params_entry.name);
           return (
-            date.getDate() +
-            "/" +
-            (date.getMonth() + 1) +
-            "/" +
-            date.getFullYear() +
-            " : " +
+            moment(date).format("YYYY-MM-DD : ") +
             Math.round((value_arr[1] + Number.EPSILON) * 100) / 100 +
             " Kg"
           );
@@ -93,6 +89,7 @@ export class WeightStatsComponent implements OnInit, OnDestroy {
         },
       },
       yAxis: {
+        name: "Kg",
         type: "value",
         boundaryGap: [0, "100%"],
         splitLine: {
