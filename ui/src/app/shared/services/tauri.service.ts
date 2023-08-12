@@ -26,6 +26,10 @@ export type ExerciseJournalEntry = {
   exercise: string;
   calories: number;
   duration: number;
+  bpm: {
+    max: number;
+    avg: number;
+  };
 };
 
 export type ExerciseJournalParams = {

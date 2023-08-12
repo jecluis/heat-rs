@@ -40,7 +40,10 @@ export class ExerciseStatsComponent implements OnInit, OnDestroy {
   public exerciseEntries: ExerciseJournalEntry[] = [];
   public chartOptions!: EChartsOption;
   public chartUpdateOptions!: EChartsOption;
-  public chartData: ChartData[] = [];
+
+  private exerciseChartData: ChartData[] = [];
+  private bpmMaxChartData: ChartData[] = [];
+  private bpmAvgChartData: ChartData[] = [];
 
   private journalSubscription?: Subscription;
 
@@ -60,7 +63,9 @@ export class ExerciseStatsComponent implements OnInit, OnDestroy {
         }
 
         this.exerciseEntries = entries;
-        this.chartData = [];
+        this.exerciseChartData = [];
+        this.bpmMaxChartData = [];
+        this.bpmAvgChartData = [];
         this.exerciseEntries.forEach((entry: ExerciseJournalEntry) => {
           let value = 0;
           if (this.chartType! === "duration") {
@@ -70,17 +75,26 @@ export class ExerciseStatsComponent implements OnInit, OnDestroy {
           }
 
           let dtStr = moment(entry.datetime).format("YYYY-MM-DD");
-          console.debug("datetime: ", entry.datetime);
-          console.debug("dtStr: ", dtStr);
-          this.chartData.push({
+          this.exerciseChartData.push({
             name: dtStr,
-            value: [dtStr, value],
+            value: [entry.datetime, value],
+          });
+          this.bpmMaxChartData.push({
+            name: dtStr,
+            value: [entry.datetime, entry.bpm.max],
+          });
+          this.bpmAvgChartData.push({
+            name: dtStr,
+            value: [entry.datetime, entry.bpm.avg],
           });
         });
         this.chartUpdateOptions = {
-          series: [{ data: this.chartData }],
+          series: [
+            { data: this.exerciseChartData },
+            { data: this.bpmMaxChartData },
+            { data: this.bpmAvgChartData },
+          ],
         };
-        console.log(`chart(${this.chartType}) data:`, this.chartData);
       },
     });
 
@@ -100,20 +114,8 @@ export class ExerciseStatsComponent implements OnInit, OnDestroy {
       },
       tooltip: {
         trigger: "axis",
-        formatter: (params: TooltipComponentFormatterCallbackParams) => {
-          let params_arr: DefaultLabelFormatterCallbackParams[] =
-            params as DefaultLabelFormatterCallbackParams[];
-          let params_entry = params_arr[0];
-          let value_arr = params_entry.value as any[];
-          const date = new Date(params_entry.name);
-          return (
-            moment(date).format("YYYY-MM-DD : ") +
-            Math.round((value_arr[1] + Number.EPSILON) * 100) / 100 +
-            " " +
-            chartUnit
-          );
-        },
         axisPointer: {
+          type: "cross",
           animation: false,
         },
       },
@@ -123,19 +125,53 @@ export class ExerciseStatsComponent implements OnInit, OnDestroy {
           show: false,
         },
       },
-      yAxis: {
-        name: chartUnit,
-        type: "value",
-        boundaryGap: [0, "100%"],
-        splitLine: {
-          show: false,
+      yAxis: [
+        {
+          name: chartUnit,
+          type: "value",
+          boundaryGap: [0, "100%"],
+          splitLine: {
+            show: false,
+          },
+          axisLine: {
+            show: true,
+          },
         },
-      },
+        {
+          name: "bpm",
+          type: "value",
+          position: "right",
+          axisLine: {
+            show: true,
+            lineStyle: {
+              color: "#EE6666",
+            },
+          },
+          splitLine: {
+            show: false,
+          },
+        },
+      ],
       series: [
         {
           name: chartTitle,
           type: "bar",
-          data: this.chartData,
+          yAxisIndex: 0,
+          data: this.exerciseChartData,
+        },
+        {
+          name: "Max Beats Per Minute",
+          type: "line",
+          yAxisIndex: 1,
+          data: this.bpmMaxChartData,
+          color: "#EE6666",
+        },
+        {
+          name: "Average Beats Per Minute",
+          type: "line",
+          yAxisIndex: 1,
+          data: this.bpmAvgChartData,
+          color: "orange",
         },
       ],
     };

@@ -22,8 +22,16 @@ struct TableExerciseEntry {
     pub exercise: String,
     pub calories: u32,
     pub duration_sec: i64,
+    pub bpm_max: u32,
+    pub bpm_avg: u32,
     #[allow(dead_code)]
     pub added_at: i64,
+}
+
+#[derive(serde::Serialize)]
+pub struct JournalExerciseBPM {
+    pub max: u32,
+    pub avg: u32,
 }
 
 #[derive(serde::Serialize)]
@@ -32,6 +40,7 @@ pub struct JournalExercise {
     pub exercise: String,
     pub calories: u32,
     pub duration: i64,
+    pub bpm: JournalExerciseBPM,
 }
 
 #[derive(serde::Deserialize)]
@@ -163,7 +172,10 @@ pub async fn journal(db: &DB, params: &JournalExerciseParams) -> Result<(), Heat
 pub async fn get_entries(db: &DB) -> Result<Vec<JournalExercise>, HeatError> {
     let entries: Vec<TableExerciseEntry> = match sqlx::query_as::<_, TableExerciseEntry>(
         "
-        SELECT datetime, exercises.name as exercise, calories, duration_sec, added_at
+        SELECT
+            datetime, exercises.name as exercise, calories, duration_sec,
+            bpm_max, bpm_avg,
+            added_at
         FROM log_exercise INNER JOIN exercises
         ON exercises.id = log_exercise.exercise_id
         ",
@@ -187,6 +199,10 @@ pub async fn get_entries(db: &DB) -> Result<Vec<JournalExercise>, HeatError> {
             exercise: entry.exercise,
             calories: entry.calories,
             duration: duration_min,
+            bpm: JournalExerciseBPM {
+                max: entry.bpm_max,
+                avg: entry.bpm_avg,
+            },
         });
     }
 
