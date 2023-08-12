@@ -20,6 +20,7 @@ import { AlertModule } from "ngx-bootstrap/alert";
 import { BsDropdownModule } from "ngx-bootstrap/dropdown";
 import { ExerciseStatsComponent } from "./components/statistics/exercise-stats/exercise-stats.component";
 import { TabsModule } from "ngx-bootstrap/tabs";
+import { CollapseModule } from "ngx-bootstrap/collapse";
 
 @NgModule({
   declarations: [
@@ -48,6 +49,7 @@ import { TabsModule } from "ngx-bootstrap/tabs";
     AlertModule.forRoot(),
     BsDropdownModule.forRoot(),
     TabsModule.forRoot(),
+    CollapseModule.forRoot(),
   ],
   providers: [],
   bootstrap: [AppComponent],

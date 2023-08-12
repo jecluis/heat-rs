@@ -20,7 +20,10 @@ import {
 import { BsModalRef } from "ngx-bootstrap/modal";
 import { Subscription } from "rxjs";
 import { ExerciseJournalService } from "src/app/shared/services/journal/exercise-journal.service";
-import { ExerciseJournalEntry } from "src/app/shared/services/tauri.service";
+import {
+  ExerciseJournalEntry,
+  ExerciseJournalParams,
+} from "src/app/shared/services/tauri.service";
 
 const exercises = ["rowing", "running", "functional", "padel", "walking"];
 
@@ -31,10 +34,11 @@ const exercises = ["rowing", "running", "functional", "padel", "walking"];
 })
 export class LogExerciseModalComponent implements OnInit, OnDestroy {
   public today: Date;
-  public selectedDate: Date;
-  public exerciseType: number;
-  public exerciseCalories: number;
-  public exerciseMinutes: number;
+
+  public data: ExerciseJournalParams;
+  public selectedType: number;
+
+  public showDurationAdvanced: boolean;
 
   public calendarConfig: Partial<BsDatepickerConfig>;
 
@@ -47,10 +51,24 @@ export class LogExerciseModalComponent implements OnInit, OnDestroy {
     private journalSvc: ExerciseJournalService,
   ) {
     this.today = new Date();
-    this.selectedDate = this.today;
-    this.exerciseType = -1;
-    this.exerciseCalories = 0;
-    this.exerciseMinutes = 0;
+    this.data = {
+      when: this.today,
+      type: "",
+      calories: 0,
+      duration: {
+        total: 0,
+        light: 0,
+        intense: 0,
+        aerobic: 0,
+        anaerobic: 0,
+      },
+      bpm: { max: 0, avg: 0 },
+      distance: 0,
+      what: { steps: 0, strokes: 0 },
+    };
+    this.selectedType = -1;
+
+    this.showDurationAdvanced = false;
 
     this.calendarConfig = {
       dateInputFormat: "YYYY-MM-DD @ HH:mm",
@@ -87,11 +105,31 @@ export class LogExerciseModalComponent implements OnInit, OnDestroy {
 
   public submit() {
     this.modalRef.hide();
-    this.journalSvc.logExercise(
-      this.selectedDate.toISOString(),
-      exercises[this.exerciseType],
-      this.exerciseCalories,
-      this.exerciseMinutes,
-    );
+    this.journalSvc.logExercise(this.data);
+  }
+
+  public useStrokes(): boolean {
+    if (this.selectedType < 0 || this.exercises.length === 0) {
+      return false;
+    }
+    return this.exercises[this.selectedType] === "rowing";
+  }
+
+  public useSteps(): boolean {
+    if (this.selectedType < 0 || this.exercises.length === 0) {
+      return false;
+    }
+    let t = this.exercises[this.selectedType];
+    return t === "running" || t === "walking";
+  }
+
+  public toggleDurationAdvanced() {
+    this.showDurationAdvanced = !this.showDurationAdvanced;
+  }
+
+  public setExerciseType(value: string | number) {
+    let v = typeof value === "number" ? value : Number.parseInt(value);
+    this.data.type = this.exercises[v];
+    this.selectedType = v;
   }
 }

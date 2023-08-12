@@ -14,7 +14,11 @@
 
 import { Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
-import { ExerciseJournalEntry, TauriService } from "../tauri.service";
+import {
+  ExerciseJournalEntry,
+  ExerciseJournalParams,
+  TauriService,
+} from "../tauri.service";
 import { ToastService } from "../toast.service";
 
 @Injectable({
@@ -41,14 +45,9 @@ export class ExerciseJournalService {
       });
   }
 
-  public logExercise(
-    date: string,
-    exerciseType: string,
-    calories: number,
-    duration: number,
-  ) {
+  public logExercise(exercise_params: ExerciseJournalParams) {
     this.tauriSvc
-      .logExercise(date, exerciseType, calories, duration)
+      .logExercise(exercise_params)
       .then((res: boolean) => {
         if (!res) {
           console.error("Unable to log exercise!");

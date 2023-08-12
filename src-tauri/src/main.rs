@@ -15,6 +15,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use journal::exercise::JournalExerciseParams;
 use log::{debug, error};
 
 mod db;
@@ -72,16 +73,13 @@ async fn get_weight_journal(
 
 #[tauri::command]
 async fn journal_exercise(
-    date: chrono::DateTime<chrono::Utc>,
-    exercise: String,
-    calories: u32,
-    duration: i64,
+    params: JournalExerciseParams,
     mstate: tauri::State<'_, ManagedState>,
 ) -> Result<bool, ()> {
     let state = &mstate.state().await;
     let db = &state.db;
 
-    match journal::exercise::journal(&db, &date, &exercise, &calories, &duration).await {
+    match journal::exercise::journal(&db, &params).await {
         Ok(_) => Ok(true),
         Err(_) => Err(()),
     }

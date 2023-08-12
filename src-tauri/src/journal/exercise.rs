@@ -34,61 +34,112 @@ pub struct JournalExercise {
     pub duration: i64,
 }
 
-pub async fn journal(
-    db: &DB,
-    datetime: &chrono::DateTime<chrono::Utc>,
-    exercise: &String,
-    calories: &u32,
-    duration: &i64,
-) -> Result<(), HeatError> {
+#[derive(serde::Deserialize)]
+pub struct JournalExerciseParamsDuration {
+    pub total: i64,
+    pub light: i64,
+    pub intense: i64,
+    pub aerobic: i64,
+    pub anaerobic: i64,
+}
+
+#[derive(serde::Deserialize)]
+pub struct JournalExerciseParamsBPM {
+    pub max: u32,
+    pub avg: u32,
+}
+
+#[derive(serde::Deserialize)]
+pub struct JournalExerciseParamsWhat {
+    pub strokes: u32,
+    pub steps: u32,
+}
+
+#[derive(serde::Deserialize)]
+pub struct JournalExerciseParams {
+    pub when: chrono::DateTime<chrono::Utc>,
+    #[serde(rename(deserialize = "type"))]
+    pub exercise: String,
+    pub calories: u32,
+    pub duration: JournalExerciseParamsDuration,
+    pub bpm: JournalExerciseParamsBPM,
+    pub distance: u32,
+    pub what: JournalExerciseParamsWhat,
+}
+
+pub async fn journal(db: &DB, params: &JournalExerciseParams) -> Result<(), HeatError> {
     log::debug!(
         "Log exercise on {} type {} for {} minutes with {} kcal expended.",
-        &datetime,
-        &exercise,
-        &calories,
-        &duration
+        &params.when,
+        &params.exercise,
+        &params.calories,
+        &params.duration.total
     );
 
-    if !duration.is_positive() {
-        log::error!("Exercise duration is not positive: {}", &duration);
+    if !params.duration.total.is_positive() {
+        log::error!(
+            "Exercise duration is not positive: {}",
+            &params.duration.total
+        );
         return Err(HeatError::InvalidParametersError);
     }
 
     let mut tx = db.pool().begin().await.unwrap_or_else(|err| {
         panic!("Unable to start transaction: {}", err);
     });
-    let exercise_id = match sqlx::query_scalar::<_, i64>("SELECT id FROM exercises WHERE name = ?")
-        .bind(&exercise)
+    let exercise_id = match sqlx::query_scalar::<_, u32>("SELECT id FROM exercises WHERE name = ?")
+        .bind(&params.exercise)
         .fetch_one(&mut *tx)
         .await
     {
         Ok(v) => v,
         Err(sqlx::Error::RowNotFound) => {
-            log::error!("Unknown exercise type '{}'!", &exercise);
+            log::error!("Unknown exercise type '{}'!", &params.exercise);
             return Err(HeatError::UnknownExerciseError);
         }
         Err(err) => {
             log::error!(
                 "Unknown error obtaining exercise ID for '{}': {}",
-                &exercise,
+                &params.exercise,
                 err
             );
             return Err(HeatError::GenericError);
         }
     };
 
-    let duration_sec = duration * 60;
+    let duration_sec = params.duration.total * 60;
+    let duration_light_sec = params.duration.light * 60;
+    let duration_intense_sec = params.duration.intense * 60;
+    let duration_aerobic_sec = params.duration.aerobic * 60;
+    let duration_anaerobic_sec = params.duration.anaerobic * 60;
 
     match sqlx::query(
         "
-        INSERT INTO log_exercise (datetime, exercise_id, calories, duration_sec, added_at)
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO log_exercise (
+            datetime, exercise_id, calories, duration_sec,
+            duration_light_sec, duration_intense_sec, duration_aerobic_sec, duration_anaerobic_sec,
+            bpm_max, bpm_avg, distance_meters, steps, strokes, added_at
+        )
+        VALUES (
+            ?, ?, ?, ?,
+            ?, ?, ?, ?,
+            ?, ?, ?, ?, ?, ?
+        )
         ",
     )
-    .bind(&datetime.timestamp())
+    .bind(&params.when.timestamp())
     .bind(&exercise_id)
-    .bind(&calories)
+    .bind(&params.calories)
     .bind(&duration_sec)
+    .bind(&duration_light_sec)
+    .bind(&duration_intense_sec)
+    .bind(&duration_aerobic_sec)
+    .bind(&duration_anaerobic_sec)
+    .bind(&params.bpm.max)
+    .bind(&params.bpm.avg)
+    .bind(&params.distance)
+    .bind(&params.what.steps)
+    .bind(&params.what.strokes)
     .bind(chrono::Utc::now().timestamp())
     .execute(&mut *tx)
     .await

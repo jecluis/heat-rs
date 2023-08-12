@@ -90,16 +90,21 @@ async fn create_db_schema(uri: &str) -> Result<(), sqlx::Error> {
         added_at    INTEGER NOT NULL
     );
     CREATE TABLE IF NOT EXISTS log_exercise (
-        id              INTEGER PRIMARY KEY NOT NULL,
-        datetime        INTEGER NOT NULL,
-        exercise_id     INTEGER NOT NULL,
-        calories        INTEGER NOT NULL,
-        duration_sec    INTEGER NOT NULL,
-        bpm_max         INTEGER NOT NULL DEFAULT (0),
-        bpm_avg         INTEGER NOT NULL DEFAULT (0),
-        distance_meters INTEGER NOT NULL DEFAULT (0),
-        strokes         INTEGER NOT NULL DEFAULT (0),
-        added_at        INTEGER NOT NULL,
+        id                      INTEGER PRIMARY KEY NOT NULL,
+        datetime                INTEGER NOT NULL,
+        exercise_id             INTEGER NOT NULL,
+        calories                INTEGER NOT NULL,
+        duration_sec            INTEGER NOT NULL,
+        duration_light_sec      INTEGER NOT NULL,
+        duration_intense_sec    INTEGER NOT NULL,
+        duration_aerobic_sec    INTEGER NOT NULL,
+        duration_anaerobic_sec  INTEGER NOT NULL,
+        bpm_max                 INTEGER NOT NULL DEFAULT (0),
+        bpm_avg                 INTEGER NOT NULL DEFAULT (0),
+        distance_meters         INTEGER NOT NULL DEFAULT (0),
+        strokes                 INTEGER NOT NULL DEFAULT (0),
+        steps                   INTEGER NOT NULL DEFAULT (0),
+        added_at                INTEGER NOT NULL,
         FOREIGN KEY (exercise_id) REFERENCES exercises (id)
     );
     CREATE TABLE IF NOT EXISTS exercises (
@@ -185,7 +190,7 @@ async fn maybe_migrate(uri: &str) -> Result<(), HeatError> {
     Ok(())
 }
 
-async fn migrate(pool: &sqlx::Pool<sqlx::Sqlite>, from: u32, to: u32) -> Result<(), sqlx::Error> {
+async fn migrate(_pool: &sqlx::Pool<sqlx::Sqlite>, from: u32, to: u32) -> Result<(), sqlx::Error> {
     if from < to - 1 {
         panic!("Can't migrate database versions separated by more than one version!");
     } else if from > to {
@@ -193,26 +198,6 @@ async fn migrate(pool: &sqlx::Pool<sqlx::Sqlite>, from: u32, to: u32) -> Result<
     } else if from == to {
         // nothing to do
         return Ok(());
-    }
-
-    if from == 1 && to == 2 {
-        match sqlx::query(
-            "
-            ALTER TABLE log_exercise ADD COLUMN bpm_max INTEGER NOT NULL DEFAULT (0);
-            ALTER TABLE log_exercise ADD COLUMN bpm_avg INTEGER NOT NULL DEFAULT (0);
-            ALTER TABLE log_exercise ADD COLUMN distance_meters INTEGER NOT NULL DEFAULT (0);
-            ALTER TABLE log_exercise ADD COLUMN strokes INTEGER NOT NULL DEFAULT (0);
-            ",
-        )
-        .execute(pool)
-        .await
-        {
-            Ok(_) => {}
-            Err(err) => {
-                log::error!("Unable to migrate from version 1 to version 2: {}", err);
-                return Err(err);
-            }
-        };
     }
 
     Ok(())

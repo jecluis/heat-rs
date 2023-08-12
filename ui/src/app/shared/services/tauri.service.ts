@@ -28,6 +28,28 @@ export type ExerciseJournalEntry = {
   duration: number;
 };
 
+export type ExerciseJournalParams = {
+  when: Date;
+  type: string;
+  calories: number;
+  duration: {
+    total: number;
+    light: number;
+    intense: number;
+    aerobic: number;
+    anaerobic: number;
+  };
+  bpm: {
+    max: number;
+    avg: number;
+  };
+  distance: number;
+  what: {
+    steps: number;
+    strokes: number;
+  };
+};
+
 @Injectable({
   providedIn: "root",
 })
@@ -53,18 +75,8 @@ export class TauriService {
     return invoke("get_weight_journal");
   }
 
-  public async logExercise(
-    date: string,
-    exerciseType: string,
-    calories: number,
-    duration: number,
-  ): Promise<boolean> {
-    return invoke("journal_exercise", {
-      date,
-      exercise: exerciseType,
-      calories,
-      duration,
-    });
+  public async logExercise(params: ExerciseJournalParams): Promise<boolean> {
+    return invoke("journal_exercise", { params });
   }
 
   public async getExerciseJournal(): Promise<ExerciseJournalEntry[]> {

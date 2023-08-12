@@ -24,13 +24,13 @@ limitations under the License.
   <form class="needs-validation">
     <div class="row mb-3">
       <div class="col-3">
-        <span class="fw-bold">When</span>
+        <span class="fw-bold align-middle">When</span>
       </div>
       <div class="col-7">
         <div class="input-group">
           <input class="form-control" placeholder="yyyy-mm-dd" name="selectedPickerDate"
                  bsDatepicker #d="bsDatepicker" [bsConfig]="calendarConfig" [bsValue]="today"
-                 [maxDate]="today" [(ngModel)]="selectedDate" #selectedPickerDate="ngModel"
+                 [maxDate]="today" [(ngModel)]="data.when" #selectedPickerDate="ngModel"
                  [dateCustomClasses]="existingEntries"
                  [class.is-invalid]="selectedPickerDate.invalid" required />
           <button class="btn btn-outline-secondary mdi mdi-calendar" (click)="d.toggle()"
@@ -41,13 +41,13 @@ limitations under the License.
 
     <div class="row mb-3">
       <div class="col-3">
-        <span class="fw-bold">Exercise</span>
+        <span class="fw-bold align-middle">Exercise</span>
       </div>
       <div class="col-5">
         <select class="form-select" aria-label="Exercise type" name="exerciseSelectType"
-                #exerciseSelectType="ngModel" [(ngModel)]="exerciseType" aria-label="Exercise Type"
-                (ngModelChange)="exerciseType = $event" id="exerciseTypeSelect" required
-                [class.is-invalid]="exerciseType < 0 && (exerciseSelectType.dirty ||
+                #exerciseSelectType="ngModel" [(ngModel)]="selectedType" aria-label="Exercise Type"
+                (ngModelChange)="setExerciseType($event)" id="exerciseTypeSelect" required
+                [class.is-invalid]="selectedType < 0 && (exerciseSelectType.dirty ||
                   exerciseSelectType.touched)">
           <option *ngFor="let exercise of exercises; let idx = index" [value]="idx">{{exercise}}
           </option>
@@ -57,13 +57,13 @@ limitations under the License.
 
     <div class="row mb-3">
       <div class="col-3">
-        <span class="fw-bold">Calories</span>
+        <span class="fw-bold align-middle">Calories</span>
       </div>
       <div class="col-5">
         <div class="input-group">
           <input class="form-control" placeholder="0" type="number" name="kcal" #kcal="ngModel"
-                 [(ngModel)]="exerciseCalories" aria-label="Exercise Calories (kcal)" step="1"
-                 (ngModelChange)="exerciseCalories = $event" id="kcalInput" required min="1"
+                 [(ngModel)]="data.calories" aria-label="Exercise Calories (kcal)" step="1"
+                 (ngModelChange)="data.calories= $event" id="kcalInput" required min="1"
                  [class.is-invalid]="kcal.invalid && (kcal.dirty || kcal.touched)" />
           <span class="input-group-text">kcal</span>
         </div>
@@ -72,17 +72,142 @@ limitations under the License.
 
     <div class="row mb-3">
       <div class="col-3">
-        <span class="fw-bold">Duration</span>
+        <span class="fw-bold align-middle">Duration</span>
       </div>
       <div class="col-5">
         <div class="input-group">
           <input class="form-control" placeholder="0" type="number" name="duration"
-                 #duration="ngModel" [(ngModel)]="exerciseMinutes"
+                 #duration="ngModel" [(ngModel)]="data.duration.total"
                  aria-label="Exercise Duration (minutes)" step="1"
-                 (ngModelChange)="exerciseMinutes = $event" id="durationInput" required min="1"
+                 (ngModelChange)="data.duration.total = $event" id="durationInput" required min="1"
                  [class.is-invalid]="duration.invalid && (duration.dirty || duration.touched)" />
           <span class="input-group-text">minutes</span>
         </div>
+      </div>
+      <div class="col-1">
+        <button class="btn btn-outline-secondary" type="button"
+                [attr.aria-expanded]="showDurationAdvanced" aria-controls="durationAdvanced"
+                (click)="toggleDurationAdvanced()">
+          Advanced
+        </button>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-3"></div>
+      <div class="col-9" id="durationAdvanced" [collapse]="!showDurationAdvanced"
+           [isAnimated]="true">
+        <div class="row mb-2">
+          <div class="col-5">
+            <div class="input-group">
+              <span class="input-group-text">light</span>
+              <input class="form-control" placeholder="0" type="number" name="durationLight"
+                     aria-label="Light Exercise Duration (minutes)" step="1" id="durationLightInput"
+                     min="0" #durationLight="ngModel" [(ngModel)]="data.duration.light"
+                     (ngModelChange)="data.duration.light = $event" required [class.is-invalid]="durationLight.invalid
+                      && (durationLight.dirty || durationLight.touched)" />
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="input-group">
+              <span class="input-group-text">intense</span>
+              <input class="form-control" placeholder="0" type="number" name="durationIntense"
+                     aria-label="Intense Exercise Duration (minutes)" step="1"
+                     id="durationIntenseInput" min="0" #durationIntense="ngModel"
+                     [(ngModel)]="data.duration.intense"
+                     (ngModelChange)="data.duration.intense = $event" required [class.is-invalid]="durationIntense.invalid
+                      && (durationIntense.dirty || durationIntense.touched)" />
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-5">
+            <div class="input-group">
+              <span class="input-group-text">aerobic</span>
+              <input class="form-control" placeholder="0" type="number" name="durationAerobic"
+                     aria-label="Light Aerobic Duration (minutes)" step="1"
+                     id="durationAerobicInput" min="0" #durationAerobic="ngModel"
+                     [(ngModel)]="data.duration.aerobic"
+                     (ngModelChange)="data.duration.aerobic = $event" required [class.is-invalid]="durationAerobic.invalid
+                      && (durationAerobic.dirty || durationAerobic.touched)" />
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="input-group">
+              <span class="input-group-text">anaerobic</span>
+              <input class="form-control" placeholder="0" type="number" name="durationAnaerobic"
+                     aria-label="Intense Anaerobic Duration (minutes)" step="1"
+                     id="durationAnaerobicInput" min="0" #durationAnaerobic="ngModel"
+                     [(ngModel)]="data.duration.anaerobic"
+                     (ngModelChange)="data.duration.anaerobic = $event" required [class.is-invalid]="durationAnaerobic.invalid
+                      && (durationAnaerobic.dirty || durationAnaerobic.touched)" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-3">
+        <span class="fw-bold align-middle">BPM</span>
+      </div>
+      <div class="col-4">
+        <div class="input-group">
+          <span class="input-group-text">max</span>
+          <input class="form-control" placeholder="0" type="number" name="bpmMax"
+                 aria-label="Maximum BPM" step="1" id="bpmMaxInput" required min="0"
+                 #bpmMax="ngModel" [(ngModel)]="data.bpm.max" (ngModelChange)="data.bpm.max= $event"
+                 required [class.is-invalid]="bpmMax.invalid && (bpmMax.dirty || bpmMax.touched)" />
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="input-group">
+          <span class="input-group-text">avg</span>
+          <input class="form-control" placeholder="0" type="number" name="bpmAvg"
+                 aria-label="Average BPM" step="1" id="bpmAvgInput" required min="0"
+                 #bpmAvg="ngModel" [(ngModel)]="data.bpm.avg" (ngModelChange)="data.bpm.avg= $event"
+                 required [class.is-invalid]="bpmAvg.invalid && (bpmAvg.dirty || bpmAvg.touched)" />
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-3">
+        <span class="fw-bold align-middle">Distance</span>
+      </div>
+      <div class="col-5">
+        <div class="input-group">
+          <input class="form-control" placeholder="0" type="number" name="distance"
+                 aria-label="Distance" step="1" id="distanceInput" required min="0"
+                 #distance="ngModel" [(ngModel)]="data.distance"
+                 (ngModelChange)="data.distance = $event" required
+                 [class.is-invalid]="distance.invalid && (distance.dirty || distance.touched)" />
+          <span class="input-group-text">meters</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-3" *ngIf="useStrokes()">
+      <div class="col-3">
+        <span class="fw-bold align-middle">Strokes</span>
+      </div>
+      <div class="col-5">
+        <input class="form-control" placeholder="0" type="number" name="strokes"
+               aria-label="Strokes" step="1" id="strokesInput" min="0" #strokes="ngModel"
+               [(ngModel)]="data.what.strokes" (ngModelChange)="data.what.strokes= $event" required
+               [class.is-invalid]="strokes.invalid && (strokes.dirty || strokes.touched)" />
+      </div>
+    </div>
+
+    <div class="row mb-3" *ngIf="useSteps()">
+      <div class="col-3">
+        <span class="fw-bold align-middle">Steps</span>
+      </div>
+      <div class="col-5">
+        <input class="form-control" placeholder="0" type="number" name="steps" aria-label="Steps"
+               step="1" id="stepsInput" min="0" #steps="ngModel" [(ngModel)]="data.what.steps"
+               (ngModelChange)="data.what.steps = $event" required
+               [class.is-invalid]="steps.invalid && (steps.dirty || steps.touched)" />
       </div>
     </div>
 
@@ -93,5 +218,5 @@ limitations under the License.
 <div class="modal-footer">
   <button type="button" class="btn btn-outline-secondary" (click)="modalRef.hide()">Cancel</button>
   <button type="button" class="btn btn-primary" (click)="submit()" [disabled]="selectedPickerDate.invalid ||
-  exerciseSelectType.invalid || exerciseType < 0 || kcal.invalid || duration.invalid">Save</button>
+  exerciseSelectType.invalid || selectedType < 0 || kcal.invalid || duration.invalid">Save</button>
 </div>
