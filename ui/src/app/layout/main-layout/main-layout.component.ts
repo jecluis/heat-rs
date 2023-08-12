@@ -22,6 +22,7 @@ import { TauriService } from "src/app/shared/services/tauri.service";
 })
 export class MainLayoutComponent {
   public version: string = "";
+  public offcanvasActive: boolean = false;
 
   public constructor(private tauriSvc: TauriService) {
     this.tauriSvc.getVersion().then((v) => (this.version = v));
