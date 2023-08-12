@@ -1,10 +1,12 @@
 import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
 import { StatsLayoutComponent } from "./layout/stats-layout/stats-layout.component";
+import { JournalLayoutComponent } from "./layout/journal-layout/journal-layout.component";
 
 const routes: Routes = [
-  { path: "", redirectTo: "stats", pathMatch: "full" },
+  { path: "", redirectTo: "journal", pathMatch: "full" },
   { path: "stats", component: StatsLayoutComponent },
+  { path: "journal", component: JournalLayoutComponent },
 ];
 
 @NgModule({

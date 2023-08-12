@@ -21,6 +21,7 @@ import { BsDropdownModule } from "ngx-bootstrap/dropdown";
 import { ExerciseStatsComponent } from "./components/statistics/exercise-stats/exercise-stats.component";
 import { TabsModule } from "ngx-bootstrap/tabs";
 import { CollapseModule } from "ngx-bootstrap/collapse";
+import { JournalLayoutComponent } from './layout/journal-layout/journal-layout.component';
 
 @NgModule({
   declarations: [
@@ -34,6 +35,7 @@ import { CollapseModule } from "ngx-bootstrap/collapse";
     WeightStatsComponent,
     LogExerciseModalComponent,
     ExerciseStatsComponent,
+    JournalLayoutComponent,
   ],
   imports: [
     BrowserModule,

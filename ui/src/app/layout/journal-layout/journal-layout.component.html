@@ -14,16 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <div class="mt-2">
-  <h5 class="text-uppercase text-center mb-2">Statistics</h5>
+  <h5 class="text-uppercase text-center mb-2">Journal</h5>
   <tabset>
     <tab heading="Weight" id="weightTabID" #weightTab="tab">
-      <heat-weight-stats *ngIf="weightTab.active"></heat-weight-stats>
+      <!-- weight journal -->
     </tab>
-    <tab heading="Calories" id="caloriesTabID" #caloriesTab="tab">
-      <heat-exercise-stats *ngIf="caloriesTab.active" type="calories"></heat-exercise-stats>
-    </tab>
-    <tab heading="Duration" id="durationTabID" #durationTab="tab">
-      <heat-exercise-stats *ngIf="durationTab.active" type="duration"></heat-exercise-stats>
+    <tab heading="Exercise" id="caloriesTabID" #caloriesTab="tab">
+      <!-- exercise journal -->
     </tab>
   </tabset>
 </div>
