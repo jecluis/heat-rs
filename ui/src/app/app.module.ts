@@ -36,6 +36,8 @@ import { ExerciseStatsComponent } from "./components/statistics/exercise-stats/e
 import { TabsModule } from "ngx-bootstrap/tabs";
 import { CollapseModule } from "ngx-bootstrap/collapse";
 import { JournalLayoutComponent } from "./layout/journal-layout/journal-layout.component";
+import { WeightJournalComponent } from './components/journal/weight-journal/weight-journal.component';
+import { ExerciseJournalComponent } from './components/journal/exercise-journal/exercise-journal.component';
 
 @NgModule({
   declarations: [
@@ -50,6 +52,8 @@ import { JournalLayoutComponent } from "./layout/journal-layout/journal-layout.c
     LogExerciseModalComponent,
     ExerciseStatsComponent,
     JournalLayoutComponent,
+    WeightJournalComponent,
+    ExerciseJournalComponent,
   ],
   imports: [
     BrowserModule,

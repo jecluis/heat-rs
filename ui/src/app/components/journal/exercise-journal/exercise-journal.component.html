@@ -1,0 +1,52 @@
+<!--
+Copyright 2023 Joao Eduardo Luis <joao@abysmo.io>
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<div class="m-3">
+
+  <table class="table table-sm table-striped table-hover">
+    <thead>
+      <tr>
+        <th scope="col" class="text-uppercase">date</th>
+        <th scope="col" class="text-uppercase">exercise</th>
+        <th scope="col" class="text-uppercase">duration</th>
+        <th scope="col" class="text-uppercase">calories</th>
+        <th scope="col" class="text-uppercase">bpm</th>
+        <th scope="col"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let entry of entries">
+        <td class="align-middle">{{entry.datetime | date}}</td>
+        <td class="align-middle">{{entry.exercise}}</td>
+        <td class="align-middle">{{entry.duration}}</td>
+        <td class="align-middle">{{entry.calories}}</td>
+        <td>
+          <div class="row">
+            <span class="text-danger">{{entry.bpm.max}}</span>
+          </div>
+          <div class="row">
+            <span class="text-primary">{{entry.bpm.avg}}</span>
+          </div>
+        </td>
+        <td class="text-end align-middle">
+          <i class="mdi mdi-pencil me-2"></i>
+          <i class="mdi mdi-trash-can-outline me-3"></i>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>

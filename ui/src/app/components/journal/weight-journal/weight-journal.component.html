@@ -13,14 +13,27 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<div class="mt-2">
-  <h5 class="text-uppercase text-center mb-2">Journal</h5>
-  <tabset>
-    <tab heading="Weight" id="weightTabID" #weightTab="tab">
-      <heat-weight-journal></heat-weight-journal>
-    </tab>
-    <tab heading="Exercise" id="caloriesTabID" #caloriesTab="tab">
-      <heat-exercise-journal></heat-exercise-journal>
-    </tab>
-  </tabset>
+
+<div class="m-3">
+
+  <table class="table table-sm table-striped table-hover">
+    <thead>
+      <tr>
+        <th scope="col" class="text-uppercase">date</th>
+        <th scope="col" class="text-uppercase">weight</th>
+        <th scope="col"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let entry of entries">
+        <td>{{entry.date}}</td>
+        <td>{{entry.value | number:'.2'}}</td>
+        <td class="text-end">
+          <i class="mdi mdi-pencil me-2"></i>
+          <i class="mdi mdi-trash-can-outline me-3"></i>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
 </div>
