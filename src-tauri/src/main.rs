@@ -72,6 +72,23 @@ async fn get_weight_journal(
 }
 
 #[tauri::command]
+async fn delete_weight_journal_entry(
+    date: chrono::NaiveDate,
+    mstate: tauri::State<'_, ManagedState>,
+) -> Result<bool, ()> {
+    let state = &mstate.state().await;
+    let db = &state.db;
+
+    match journal::weight::delete_entry(&db, &date).await {
+        Err(err) => {
+            log::error!("Unable to delete weight journal entry: {}", err);
+            return Err(());
+        }
+        Ok(v) => Ok(v),
+    }
+}
+
+#[tauri::command]
 async fn journal_exercise(
     params: JournalExerciseParams,
     mstate: tauri::State<'_, ManagedState>,
@@ -143,6 +160,7 @@ async fn main() {
         .invoke_handler(tauri::generate_handler![
             journal_weight,
             get_weight_journal,
+            delete_weight_journal_entry,
             journal_exercise,
             get_exercise_journal,
             get_exercise_types,

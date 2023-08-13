@@ -18,6 +18,7 @@ use crate::{db::DB, errors::HeatError};
 
 #[derive(sqlx::FromRow)]
 struct TableExerciseEntry {
+    pub id: i64,
     pub datetime: i64,
     pub exercise: String,
     pub calories: u32,
@@ -36,6 +37,7 @@ pub struct JournalExerciseBPM {
 
 #[derive(serde::Serialize)]
 pub struct JournalExercise {
+    pub id: i64,
     pub datetime: chrono::DateTime<chrono::Utc>,
     pub exercise: String,
     pub calories: u32,
@@ -172,7 +174,7 @@ pub async fn journal(db: &DB, params: &JournalExerciseParams) -> Result<(), Heat
 pub async fn get_entries(db: &DB) -> Result<Vec<JournalExercise>, HeatError> {
     let entries: Vec<TableExerciseEntry> = match sqlx::query_as::<_, TableExerciseEntry>(
         "
-        SELECT
+        SELECT log_exercise.id as id,
             datetime, exercises.name as exercise, calories, duration_sec,
             bpm_max, bpm_avg,
             added_at
@@ -195,6 +197,7 @@ pub async fn get_entries(db: &DB) -> Result<Vec<JournalExercise>, HeatError> {
         let dt = chrono::Utc.timestamp_opt(entry.datetime, 0).unwrap();
         let duration_min = entry.duration_sec / 60;
         result.push(JournalExercise {
+            id: entry.id,
             datetime: dt,
             exercise: entry.exercise,
             calories: entry.calories,

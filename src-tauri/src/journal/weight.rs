@@ -111,3 +111,22 @@ pub async fn get_entries(db: &DB) -> Result<Vec<JournalWeight>, HeatError> {
 
     Ok(result)
 }
+
+pub async fn delete_entry(db: &DB, date: &chrono::NaiveDate) -> Result<bool, HeatError> {
+    let ts = &date.and_hms_opt(0, 0, 0).unwrap().timestamp();
+    log::debug!("delete weight entry '{}', ts: {}", date, ts);
+    match sqlx::query(
+        "
+        DELETE FROM log_weight WHERE date = ?
+
+    ",
+    )
+    .bind(&ts)
+    .execute(db.pool())
+    .await
+    {
+        Ok(_) => Ok(true),
+        Err(sqlx::Error::RowNotFound) => Ok(false),
+        Err(_) => Err(HeatError::GenericError),
+    }
+}

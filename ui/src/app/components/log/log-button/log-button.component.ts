@@ -26,7 +26,7 @@ export class LogButtonComponent {
   public constructor(private modalSvc: BsModalService) {}
 
   public openLogWeight() {
-    this.modalSvc.show(LogWeightModalComponent);
+    this.modalSvc.show(LogWeightModalComponent, { animated: true });
   }
 
   public openLogExercise() {

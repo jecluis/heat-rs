@@ -17,11 +17,13 @@ import { invoke } from "@tauri-apps/api";
 import { getVersion as tauriGetVersion } from "@tauri-apps/api/app";
 
 export type WeightJournalEntry = {
+  id: number;
   date: string;
   value: number;
 };
 
 export type ExerciseJournalEntry = {
+  id: number;
   datetime: string;
   exercise: string;
   calories: number;
@@ -77,6 +79,10 @@ export class TauriService {
 
   public async getWeightJournal(): Promise<WeightJournalEntry[]> {
     return invoke("get_weight_journal");
+  }
+
+  public async deleteWeightJournalEntry(date: string): Promise<boolean> {
+    return invoke("delete_weight_journal_entry", { date });
   }
 
   public async logExercise(params: ExerciseJournalParams): Promise<boolean> {

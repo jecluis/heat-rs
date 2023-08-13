@@ -59,6 +59,26 @@ export class WeightJournalService {
       });
   }
 
+  public deleteEntry(entry: WeightJournalEntry) {
+    this.tauriSvc
+      .deleteWeightJournalEntry(entry.date)
+      .then((res: boolean) => {
+        if (!res) {
+          console.error(
+            `Unable to delete weight entry for date ${entry.date}!`,
+          );
+          this.toastSvc.showError("Unable to delete weight entry!");
+          return;
+        }
+        this.toastSvc.showSuccess("Weight entry deleted!", "weight");
+        this.update();
+      })
+      .catch((err) => {
+        console.error("Error deleting weight: ", err);
+        this.toastSvc.showErrorBoom("Error deleting weight entry!");
+      });
+  }
+
   public get journal(): BehaviorSubject<WeightJournalEntry[]> {
     return this.journalSubject;
   }

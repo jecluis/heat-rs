@@ -38,6 +38,7 @@ import { CollapseModule } from "ngx-bootstrap/collapse";
 import { JournalLayoutComponent } from "./layout/journal-layout/journal-layout.component";
 import { WeightJournalComponent } from './components/journal/weight-journal/weight-journal.component';
 import { ExerciseJournalComponent } from './components/journal/exercise-journal/exercise-journal.component';
+import { DeletionDialogComponent } from './shared/components/deletion-dialog/deletion-dialog.component';
 
 @NgModule({
   declarations: [
@@ -54,6 +55,7 @@ import { ExerciseJournalComponent } from './components/journal/exercise-journal/
     JournalLayoutComponent,
     WeightJournalComponent,
     ExerciseJournalComponent,
+    DeletionDialogComponent,
   ],
   imports: [
     BrowserModule,
