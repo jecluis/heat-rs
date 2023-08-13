@@ -93,6 +93,10 @@ export class TauriService {
     return invoke("get_exercise_journal");
   }
 
+  public async deleteExerciseJournalEntry(id: number): Promise<boolean> {
+    return invoke("delete_exercise_journal_entry", { id });
+  }
+
   public async getExerciseTypes(): Promise<string[]> {
     return invoke("get_exercise_types");
   }

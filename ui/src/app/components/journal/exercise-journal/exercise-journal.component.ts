@@ -13,7 +13,10 @@
 // limitations under the License.
 
 import { Component, OnDestroy, OnInit } from "@angular/core";
+import * as moment from "moment";
+import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { Subscription } from "rxjs";
+import { DeletionDialogComponent } from "src/app/shared/components/deletion-dialog/deletion-dialog.component";
 import { ExerciseJournalService } from "src/app/shared/services/journal/exercise-journal.service";
 import { ExerciseJournalEntry } from "src/app/shared/services/tauri.service";
 
@@ -26,8 +29,13 @@ export class ExerciseJournalComponent implements OnInit, OnDestroy {
   public entries: ExerciseJournalEntry[] = [];
 
   private journalSubscription?: Subscription;
+  private deletionModalRef?: BsModalRef;
+  private deletionSubscription?: Subscription;
 
-  public constructor(private journalSvc: ExerciseJournalService) {}
+  public constructor(
+    private journalSvc: ExerciseJournalService,
+    private modalSvc: BsModalService,
+  ) {}
 
   public ngOnInit(): void {
     this.journalSubscription = this.journalSvc.journal.subscribe({
@@ -39,5 +47,32 @@ export class ExerciseJournalComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.journalSubscription?.unsubscribe();
+    this.deletionModalRef?.hide();
+    this.deletionSubscription?.unsubscribe();
+  }
+
+  public deleteEntry(entry: ExerciseJournalEntry) {
+    if (!!this.deletionModalRef) {
+      return;
+    }
+
+    let dt = moment(entry.datetime);
+    let when = dt.format("YYYY-MM-DD") + " at " + dt.format("HH:mm");
+
+    this.deletionModalRef = this.modalSvc.show(DeletionDialogComponent, {
+      initialState: {
+        entryName: `${entry.exercise} on ${when}`,
+      },
+    });
+    this.deletionSubscription = this.deletionModalRef.content.onClose.subscribe(
+      (result: boolean) => {
+        if (result) {
+          this.journalSvc.deleteEntry(entry);
+        }
+        this.deletionSubscription?.unsubscribe();
+        this.deletionSubscription = undefined;
+        this.deletionModalRef = undefined;
+      },
+    );
   }
 }

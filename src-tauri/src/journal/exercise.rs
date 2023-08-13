@@ -212,6 +212,25 @@ pub async fn get_entries(db: &DB) -> Result<Vec<JournalExercise>, HeatError> {
     Ok(result)
 }
 
+pub async fn delete_entry(db: &DB, id: &i64) -> Result<bool, HeatError> {
+    match sqlx::query("DELETE FROM log_exercise WHERE id = ?")
+        .bind(&id)
+        .execute(db.pool())
+        .await
+    {
+        Ok(_) => Ok(true),
+        Err(sqlx::Error::RowNotFound) => Ok(false),
+        Err(err) => {
+            log::error!(
+                "Unable to delete entry {} from exercises journal: {}",
+                id,
+                err
+            );
+            return Err(HeatError::GenericError);
+        }
+    }
+}
+
 pub async fn get_exercise_types(db: &DB) -> Result<Vec<String>, HeatError> {
     match sqlx::query_scalar::<_, String>("SELECT name FROM exercises")
         .fetch_all(db.pool())

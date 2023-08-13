@@ -67,6 +67,24 @@ export class ExerciseJournalService {
     return this.tauriSvc.getExerciseTypes();
   }
 
+  public deleteEntry(entry: ExerciseJournalEntry) {
+    this.tauriSvc
+      .deleteExerciseJournalEntry(entry.id)
+      .then((res: boolean) => {
+        if (!res) {
+          console.error(`Unable to delete exercise entry id '${entry.id}'!`);
+          this.toastSvc.showError("Unable to delete exercise entry!");
+          return;
+        }
+        this.toastSvc.showSuccess("Exercise entry deleted!", "weight-lifter");
+        this.update();
+      })
+      .catch((err) => {
+        console.error("Error deleting exercise: ", err);
+        this.toastSvc.showErrorBoom("Error deleting exercise entry!");
+      });
+  }
+
   public get journal(): BehaviorSubject<ExerciseJournalEntry[]> {
     return this.journalSubject;
   }

@@ -119,6 +119,23 @@ async fn get_exercise_journal(
 }
 
 #[tauri::command]
+async fn delete_exercise_journal_entry(
+    id: i64,
+    mstate: tauri::State<'_, ManagedState>,
+) -> Result<bool, ()> {
+    let state = &mstate.state().await;
+    let db = &state.db;
+
+    match journal::exercise::delete_entry(&db, &id).await {
+        Ok(v) => Ok(v),
+        Err(err) => {
+            log::error!("Unable to delete exercise journal entry: {}", err);
+            return Err(());
+        }
+    }
+}
+
+#[tauri::command]
 async fn get_exercise_types(mstate: tauri::State<'_, ManagedState>) -> Result<Vec<String>, ()> {
     let state = &mstate.state().await;
     let db = &state.db;
@@ -163,6 +180,7 @@ async fn main() {
             delete_weight_journal_entry,
             journal_exercise,
             get_exercise_journal,
+            delete_exercise_journal_entry,
             get_exercise_types,
         ])
         .run(tauri::generate_context!())
