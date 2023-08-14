@@ -56,6 +56,13 @@ export type ExerciseJournalParams = {
   };
 };
 
+export type HeatPaths = {
+  data: string;
+  config: string;
+  db_path: string;
+  is_custom_path: boolean;
+};
+
 @Injectable({
   providedIn: "root",
 })
@@ -99,5 +106,9 @@ export class TauriService {
 
   public async getExerciseTypes(): Promise<string[]> {
     return invoke("get_exercise_types");
+  }
+
+  public async getPaths(): Promise<HeatPaths> {
+    return invoke("get_paths");
   }
 }

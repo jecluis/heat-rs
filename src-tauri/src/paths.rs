@@ -17,10 +17,12 @@ use std::path::PathBuf;
 
 const HEAT_PATH_ID: &str = "io.abysmo.heat";
 
+#[derive(serde::Serialize, Clone)]
 pub struct Paths {
     pub data: PathBuf,
     pub config: PathBuf,
     pub db_path: PathBuf,
+    pub is_custom_path: bool,
 }
 
 impl Default for Paths {
@@ -34,6 +36,7 @@ impl Default for Paths {
             data,
             config,
             db_path,
+            is_custom_path: false,
         }
     }
 }
@@ -48,6 +51,7 @@ impl Paths {
             data,
             config,
             db_path,
+            is_custom_path: true,
         }
     }
 

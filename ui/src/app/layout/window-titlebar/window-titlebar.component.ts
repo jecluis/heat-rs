@@ -12,15 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { appWindow } from "@tauri-apps/api/window";
+import { HeatPaths, TauriService } from "src/app/shared/services/tauri.service";
 
 @Component({
   selector: "heat-window-titlebar",
   templateUrl: "./window-titlebar.component.html",
   styleUrls: ["./window-titlebar.component.scss"],
 })
-export class WindowTitlebarComponent {
+export class WindowTitlebarComponent implements OnInit {
+  public customPath?: string;
+
+  public constructor(private tauriSvc: TauriService) {}
+
+  public ngOnInit(): void {
+    this.tauriSvc
+      .getPaths()
+      .then((paths: HeatPaths) => {
+        if (paths.is_custom_path) {
+          this.customPath = paths.db_path;
+        }
+      })
+      .catch((err) => {
+        console.error("Error obtaining application paths: ", err);
+      });
+  }
+
   public minimize() {
     appWindow.minimize();
   }

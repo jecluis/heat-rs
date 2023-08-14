@@ -15,6 +15,7 @@ limitations under the License.
 -->
 
 <div data-tauri-drag-region class="titlebar">
+  <span *ngIf="!!customPath" class="me-auto ms-2 fw-bold text-light">{{customPath}}</span>
   <div class="titlebar-button" id="titlebar-minimize">
     <i class="mdi mdi-window-minimize" alt="minimize" (click)="minimize()"></i>
   </div>

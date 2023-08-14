@@ -145,6 +145,12 @@ async fn get_exercise_types(mstate: tauri::State<'_, ManagedState>) -> Result<Ve
     }
 }
 
+#[tauri::command]
+async fn get_paths(mstate: tauri::State<'_, ManagedState>) -> Result<paths::Paths, ()> {
+    let state = &mstate.state().await;
+    Ok(state.paths.clone())
+}
+
 async fn setup_db(path: &std::path::PathBuf) -> db::DB {
     let mut handle = db::DB::new(&path).setup().await;
     handle.connect().await;
@@ -182,6 +188,7 @@ async fn main() {
             get_exercise_journal,
             delete_exercise_journal_entry,
             get_exercise_types,
+            get_paths,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
