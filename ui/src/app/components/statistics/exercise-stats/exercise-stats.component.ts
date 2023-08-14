@@ -79,14 +79,18 @@ export class ExerciseStatsComponent implements OnInit, OnDestroy {
             name: dtStr,
             value: [entry.datetime, value],
           });
-          this.bpmMaxChartData.push({
-            name: dtStr,
-            value: [entry.datetime, entry.bpm.max],
-          });
-          this.bpmAvgChartData.push({
-            name: dtStr,
-            value: [entry.datetime, entry.bpm.avg],
-          });
+          if (entry.bpm.max > 0) {
+            this.bpmMaxChartData.push({
+              name: dtStr,
+              value: [entry.datetime, entry.bpm.max],
+            });
+          }
+          if (entry.bpm.avg > 0) {
+            this.bpmAvgChartData.push({
+              name: dtStr,
+              value: [entry.datetime, entry.bpm.avg],
+            });
+          }
         });
         this.chartUpdateOptions = {
           series: [
