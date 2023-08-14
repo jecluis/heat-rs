@@ -204,9 +204,17 @@ export class ExerciseStatsComponent implements OnInit, OnDestroy {
         {
           name: "Average Beats Per Minute",
           type: "line",
+          lineStyle: {
+            type: "dashed",
+            color: "#EE6666",
+          },
+          symbol: "diamond",
+          symbolSize: 10,
+          itemStyle: {
+            color: "#EE6666",
+          },
           yAxisIndex: 1,
           data: this.bpmAvgChartData,
-          color: "orange",
         },
         {
           name: "Calories Per Minute",
