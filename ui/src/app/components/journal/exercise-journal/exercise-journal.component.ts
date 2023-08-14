@@ -40,7 +40,7 @@ export class ExerciseJournalComponent implements OnInit, OnDestroy {
   public ngOnInit(): void {
     this.journalSubscription = this.journalSvc.journal.subscribe({
       next: (entries: ExerciseJournalEntry[]) => {
-        this.entries = entries;
+        this.entries = entries.reverse();
       },
     });
   }

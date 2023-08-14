@@ -39,7 +39,7 @@ export class WeightJournalComponent implements OnInit, OnDestroy {
   public ngOnInit(): void {
     this.journalSubscription = this.journalSvc.journal.subscribe({
       next: (entries: WeightJournalEntry[]) => {
-        this.entries = entries;
+        this.entries = entries.reverse();
       },
     });
   }
