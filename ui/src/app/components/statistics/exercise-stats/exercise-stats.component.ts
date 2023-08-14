@@ -44,6 +44,7 @@ export class ExerciseStatsComponent implements OnInit, OnDestroy {
   private exerciseChartData: ChartData[] = [];
   private bpmMaxChartData: ChartData[] = [];
   private bpmAvgChartData: ChartData[] = [];
+  private kcalPerMinute: ChartData[] = [];
 
   private journalSubscription?: Subscription;
 
@@ -66,6 +67,7 @@ export class ExerciseStatsComponent implements OnInit, OnDestroy {
         this.exerciseChartData = [];
         this.bpmMaxChartData = [];
         this.bpmAvgChartData = [];
+        this.kcalPerMinute = [];
         this.exerciseEntries.forEach((entry: ExerciseJournalEntry) => {
           let value = 0;
           if (this.chartType! === "duration") {
@@ -91,12 +93,22 @@ export class ExerciseStatsComponent implements OnInit, OnDestroy {
               value: [entry.datetime, entry.bpm.avg],
             });
           }
+
+          let kcalpermin =
+            Math.round(
+              (entry.calories / entry.duration + Number.EPSILON) * 100,
+            ) / 100;
+          this.kcalPerMinute.push({
+            name: dtStr,
+            value: [entry.datetime, kcalpermin],
+          });
         });
         this.chartUpdateOptions = {
           series: [
             { data: this.exerciseChartData },
             { data: this.bpmMaxChartData },
             { data: this.bpmAvgChartData },
+            { data: this.kcalPerMinute },
           ],
         };
       },
@@ -122,6 +134,9 @@ export class ExerciseStatsComponent implements OnInit, OnDestroy {
           type: "cross",
           animation: false,
         },
+      },
+      grid: {
+        right: "20%",
       },
       xAxis: {
         type: "time",
@@ -155,6 +170,22 @@ export class ExerciseStatsComponent implements OnInit, OnDestroy {
             show: false,
           },
         },
+        {
+          name: "kcal/min",
+          type: "value",
+          position: "right",
+          offset: 80,
+          axisLine: {
+            show: true,
+            lineStyle: {
+              color: "green",
+            },
+          },
+          splitLine: {
+            show: false,
+          },
+          boundaryGap: [0, "100%"],
+        },
       ],
       series: [
         {
@@ -176,6 +207,13 @@ export class ExerciseStatsComponent implements OnInit, OnDestroy {
           yAxisIndex: 1,
           data: this.bpmAvgChartData,
           color: "orange",
+        },
+        {
+          name: "Calories Per Minute",
+          type: "line",
+          yAxisIndex: 2,
+          data: this.kcalPerMinute,
+          color: "green",
         },
       ],
     };

@@ -16,14 +16,7 @@ limitations under the License.
 <alert type="danger" *ngIf="!chartType">Chart Type not set!</alert>
 
 <div class="row me-0 ms-0" *ngIf="!!chartType">
-  <div class="col-3">
-    <div *ngFor="let entry of exerciseEntries">
-      <span>{{entry.datetime}}</span>
-      <span class="ms-2">{{entry.calories | number:'1.2'}} kcal</span>
-    </div>
-  </div>
-
-  <div class="col-9">
+  <div class="col">
     <div echarts [options]="chartOptions" [merge]="chartUpdateOptions"></div>
   </div>
 </div>
